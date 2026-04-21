@@ -270,7 +270,7 @@ export interface HookResult {
 /**
  * External model provider type
  */
-export type ExternalModelProvider = "codex" | "gemini";
+export type ExternalModelProvider = "codex" | "gemini" | "kimi";
 /**
  * External model configuration for a specific role or task
  */
@@ -285,6 +285,7 @@ export interface ExternalModelsDefaults {
     provider?: ExternalModelProvider;
     codexModel?: string;
     geminiModel?: string;
+    kimiModel?: string;
 }
 /**
  * External models fallback policy
@@ -327,7 +328,9 @@ export type DelegationProvider = "claude"
 /** Use /team to coordinate Codex CLI workers in tmux panes. */
  | "codex"
 /** Use /team to coordinate Gemini CLI workers in tmux panes. */
- | "gemini";
+ | "gemini"
+/** Use /team to coordinate Kimi CLI workers in tmux panes. */
+ | "kimi";
 /** Tool type for delegation routing — only Claude Task is supported. */
 export type DelegationTool = "Task";
 /**
@@ -372,7 +375,7 @@ export interface ResolveDelegationOptions {
 export declare const CANONICAL_TEAM_ROLES: readonly ["orchestrator", "planner", "analyst", "architect", "executor", "debugger", "critic", "code-reviewer", "security-reviewer", "test-engineer", "designer", "writer", "code-simplifier", "explore", "document-specialist"];
 export type CanonicalTeamRole = typeof CANONICAL_TEAM_ROLES[number];
 /** Provider for /team role routing. */
-export type TeamRoleProvider = 'claude' | 'codex' | 'gemini';
+export type TeamRoleProvider = 'claude' | 'codex' | 'gemini' | 'kimi';
 /** Tier name accepted in role-assignment `model` field. */
 export type TeamRoleTier = 'HIGH' | 'MEDIUM' | 'LOW';
 /** Known agent names derived from `buildDefaultConfig().agents` keys in src/config/loader.ts. */

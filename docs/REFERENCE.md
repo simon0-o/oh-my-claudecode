@@ -341,14 +341,15 @@ claude --plugin-dir /path/to/oh-my-claudecode
 omc ask claude "review this patch"
 omc ask codex "review this patch from a security perspective"
 omc ask gemini --prompt "suggest UX improvements"
+omc ask kimi "analyze and improve code quality"
 omc ask claude --agent-prompt executor --prompt "create an implementation plan"
 ```
 
-- Provider matrix: `claude | codex | gemini`
+- Provider matrix: `claude | codex | gemini | kimi`
 - Artifacts: `.omc/artifacts/ask/{provider}-{slug}-{timestamp}.md`
 - Canonical env vars: `OMC_ASK_ADVISOR_SCRIPT`, `OMC_ASK_ORIGINAL_TASK`
 - Phase-1 aliases (deprecated warning): `OMX_ASK_ADVISOR_SCRIPT`, `OMX_ASK_ORIGINAL_TASK`
-- Skill entrypoint: `/oh-my-claudecode:ask <claude|codex|gemini> <prompt>` routes to this command
+- Skill entrypoint: `/oh-my-claudecode:ask <claude|codex|gemini|kimi> <prompt>` routes to this command
 
 ### `omc team` (CLI runtime surface)
 
@@ -523,11 +524,11 @@ Includes **34 canonical skills + 1 deprecated alias** (`psm`). Runtime truth com
 | Skill                     | Description                                                      | Manual Command                              |
 | ------------------------- | ---------------------------------------------------------------- | ------------------------------------------- |
 | `ai-slop-cleaner`         | Anti-slop cleanup workflow with optional reviewer-only `--review` pass | `/oh-my-claudecode:ai-slop-cleaner`         |
-| `ask`                     | Ask Claude, Codex, or Gemini via local CLI and capture a reusable artifact | `/oh-my-claudecode:ask`               |
+| `ask`                     | Ask Claude, Codex, Gemini, or Kimi via local CLI and capture a reusable artifact | `/oh-my-claudecode:ask`               |
 | `autoresearch`            | Stateful single-mission evaluator-driven improvement loop           | `/oh-my-claudecode:autoresearch`            |
 | `autopilot`               | Full autonomous execution from idea to working code              | `/oh-my-claudecode:autopilot`               |
 | `cancel`                  | Unified cancellation for active modes                            | `/oh-my-claudecode:cancel`                  |
-| `ccg`                     | Tri-model workflow via `ask codex` + `ask gemini`, then Claude synthesis | `/oh-my-claudecode:ccg`                     |
+| `ccg`                     | Multi-model workflow via `ask codex` + `ask gemini` (+ optional `ask kimi`), then Claude synthesis | `/oh-my-claudecode:ccg`                     |
 | `configure-notifications` | Configure notification integrations (Telegram, Discord, Slack) via natural language | `/oh-my-claudecode:configure-notifications` |
 | `deep-dive`               | Two-stage trace → deep-interview pipeline with context handoff   | `/oh-my-claudecode:deep-dive`               |
 | `deep-interview`          | Socratic deep interview with ambiguity gating                    | `/oh-my-claudecode:deep-interview`          |
@@ -540,7 +541,7 @@ Includes **34 canonical skills + 1 deprecated alias** (`psm`). Runtime truth com
 | `omc-plan`                | Planning workflow (`/plan` safe alias)                           | `/oh-my-claudecode:omc-plan`                |
 | `omc-reference`           | Detailed OMC agent/tools/team/commit reference skill             | Auto-loaded reference only                  |
 | `omc-setup`               | One-time setup wizard                                            | `/oh-my-claudecode:omc-setup`               |
-| `omc-teams`               | Spawn `claude`/`codex`/`gemini` tmux workers for parallel execution | `/oh-my-claudecode:omc-teams`             |
+| `omc-teams`               | Spawn `claude`/`codex`/`gemini`/`kimi` tmux workers for parallel execution | `/oh-my-claudecode:omc-teams`             |
 | `project-session-manager` | Manage isolated dev environments (git worktrees + tmux)          | `/oh-my-claudecode:project-session-manager` |
 | `psm` | **Deprecated** compatibility alias for `project-session-manager` | `/oh-my-claudecode:psm` |
 | `ralph`                   | Persistence loop until verified completion                       | `/oh-my-claudecode:ralph`                   |
@@ -568,7 +569,7 @@ Each installed skill is exposed as `/oh-my-claudecode:<skill-name>`. The skills 
 | Command                                     | Description                                                                                   |
 | ------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `/oh-my-claudecode:ai-slop-cleaner <target>`    | Run the anti-slop cleanup workflow (`--review` for reviewer-only pass)                    |
-| `/oh-my-claudecode:ask <claude\|codex\|gemini> <prompt>` | Route a prompt through the selected advisor CLI and capture an ask artifact         |
+| `/oh-my-claudecode:ask <claude\|codex\|gemini\|kimi> <prompt>` | Route a prompt through the selected advisor CLI and capture an ask artifact         |
 | `/oh-my-claudecode:autopilot <task>`            | Full autonomous execution                                                                  |
 | `/oh-my-claudecode:configure-notifications`     | Configure notification integrations                                                       |
 | `/oh-my-claudecode:deep-dive <problem>`         | Run the trace → deep-interview pipeline                                                   |
@@ -578,7 +579,7 @@ Each installed skill is exposed as `/oh-my-claudecode:<skill-name>`. The skills 
 | `/oh-my-claudecode:omc-doctor`                  | Diagnose and fix installation issues                                                       |
 | `/oh-my-claudecode:omc-plan <description>`      | Start planning session (supports consensus structured deliberation)                        |
 | `/oh-my-claudecode:omc-setup`                   | One-time setup wizard                                                                      |
-| `/oh-my-claudecode:omc-teams <N>:<agent> <task>`       | Spawn `claude`/`codex`/`gemini` tmux workers for legacy parallel execution                |
+| `/oh-my-claudecode:omc-teams <N>:<agent> <task>`       | Spawn `claude`/`codex`/`gemini`/`kimi` tmux workers for legacy parallel execution                |
 | `/oh-my-claudecode:project-session-manager <arguments>` | Manage isolated dev environments with git worktrees + tmux                         |
 | `/oh-my-claudecode:psm <arguments>`             | Deprecated alias for project session manager                                               |
 | `/oh-my-claudecode:ralph <task>`                | Self-referential loop until task completion (`--critic=architect|critic|codex`)           |

@@ -62,11 +62,11 @@ export declare function upsertJob(status: JobStatus, cwd?: string): boolean;
 /**
  * Get a single job by provider and job ID.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @returns The JobStatus if found, null otherwise
  */
-export declare function getJob(provider: "codex" | "gemini", jobId: string, cwd?: string): JobStatus | null;
+export declare function getJob(provider: "codex" | "gemini" | "kimi", jobId: string, cwd?: string): JobStatus | null;
 /**
  * Get jobs filtered by provider and/or status.
  *
@@ -74,14 +74,14 @@ export declare function getJob(provider: "codex" | "gemini", jobId: string, cwd?
  * @param status - Filter by status string
  * @returns Array of matching JobStatus objects, empty array on failure
  */
-export declare function getJobsByStatus(provider: "codex" | "gemini" | undefined, status: string, cwd?: string): JobStatus[];
+export declare function getJobsByStatus(provider: "codex" | "gemini" | "kimi" | undefined, status: string, cwd?: string): JobStatus[];
 /**
  * Get all active (spawned or running) jobs, optionally filtered by provider.
  *
  * @param provider - Filter by provider, or undefined for all providers
  * @returns Array of active JobStatus objects, empty array on failure
  */
-export declare function getActiveJobs(provider?: "codex" | "gemini", cwd?: string): JobStatus[];
+export declare function getActiveJobs(provider?: "codex" | "gemini" | "kimi", cwd?: string): JobStatus[];
 /**
  * Get recent jobs within a time window, optionally filtered by provider.
  * Compares spawned_at ISO strings against a cutoff timestamp.
@@ -90,25 +90,25 @@ export declare function getActiveJobs(provider?: "codex" | "gemini", cwd?: strin
  * @param withinMs - Time window in milliseconds (default: 1 hour)
  * @returns Array of recent JobStatus objects, empty array on failure
  */
-export declare function getRecentJobs(provider?: "codex" | "gemini", withinMs?: number, cwd?: string): JobStatus[];
+export declare function getRecentJobs(provider?: "codex" | "gemini" | "kimi", withinMs?: number, cwd?: string): JobStatus[];
 /**
  * Partially update a job's fields. Only provided fields are updated;
  * omitted fields are left unchanged.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @param updates - Partial JobStatus with fields to update
  * @returns true if the update succeeded, false on failure
  */
-export declare function updateJobStatus(provider: "codex" | "gemini", jobId: string, updates: Partial<JobStatus>, cwd?: string): boolean;
+export declare function updateJobStatus(provider: "codex" | "gemini" | "kimi", jobId: string, updates: Partial<JobStatus>, cwd?: string): boolean;
 /**
  * Delete a job record by provider and job ID.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @returns true if deletion succeeded, false on failure
  */
-export declare function deleteJob(provider: "codex" | "gemini", jobId: string, cwd?: string): boolean;
+export declare function deleteJob(provider: "codex" | "gemini" | "kimi", jobId: string, cwd?: string): boolean;
 /**
  * Migrate existing JSON status files into the SQLite database.
  * Scans the prompts directory for *-status-*.json files, parses each,

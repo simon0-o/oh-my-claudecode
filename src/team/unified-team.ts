@@ -80,9 +80,11 @@ export function getTeamMembers(
       // Determine backend and default capabilities
       let backend: WorkerBackend;
       if (worker.agentType === 'mcp-gemini') backend = 'mcp-gemini';
+      else if (worker.agentType === 'mcp-kimi') backend = 'mcp-kimi';
       else if (worker.agentType === 'tmux-claude') backend = 'tmux-claude';
       else if (worker.agentType === 'tmux-codex') backend = 'tmux-codex';
       else if (worker.agentType === 'tmux-gemini') backend = 'tmux-gemini';
+      else if (worker.agentType === 'tmux-kimi') backend = 'tmux-kimi';
       else backend = 'mcp-codex';
       const capabilities = getDefaultCapabilities(backend);
 

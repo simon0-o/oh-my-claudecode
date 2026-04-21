@@ -8,6 +8,7 @@ const PROVIDER_BINARIES = {
   claude: 'claude',
   codex: 'codex',
   gemini: 'gemini',
+  kimi: 'kimi',
 };
 const SHOULD_USE_WINDOWS_SHELL = process.platform === 'win32';
 
@@ -16,6 +17,7 @@ const SHOULD_USE_WINDOWS_SHELL = process.platform === 'win32';
  * - claude: `claude -p <prompt>`
  * - codex: `codex exec --dangerously-bypass-approvals-and-sandbox <prompt>`
  * - gemini: `gemini -p <prompt> --yolo`
+ * - kimi: `kimi -p <prompt> --yolo`
  */
 function buildProviderArgs(provider, prompt, { pipePromptViaStdin = false } = {}) {
   if (provider === 'codex') {
@@ -24,11 +26,17 @@ function buildProviderArgs(provider, prompt, { pipePromptViaStdin = false } = {}
   if (provider === 'gemini') {
     return pipePromptViaStdin ? ['--yolo'] : ['-p', prompt, '--yolo'];
   }
+  if (provider === 'kimi') {
+    // Kimi supports pipeline mode (stdin prompt) with --quiet for clean output.
+    // --quiet is an alias for --print --output-format text --final-message-only,
+    // and --print implicitly enables yolo per Kimi CLI docs.
+    return pipePromptViaStdin ? ['--quiet'] : ['-p', prompt, '--quiet'];
+  }
   return ['-p', prompt];
 }
 
 function shouldPipePromptViaStdin(provider, prompt) {
-  if (provider !== 'codex' && provider !== 'gemini') {
+  if (provider !== 'codex' && provider !== 'gemini' && provider !== 'kimi') {
     return false;
   }
 
@@ -43,10 +51,11 @@ const ASK_ORIGINAL_TASK_ENV = 'OMC_ASK_ORIGINAL_TASK';
 const ASK_ORIGINAL_TASK_ENV_ALIAS = 'OMX_ASK_ORIGINAL_TASK';
 
 function usage() {
-  console.error('Usage: omc ask <claude|codex|gemini> "<prompt>"');
-  console.error('Legacy direct usage: node scripts/run-provider-advisor.js <claude|codex|gemini> <prompt...>');
+  console.error('Usage: omc ask <claude|codex|gemini|kimi> "<prompt>"');
+  console.error('Legacy direct usage: node scripts/run-provider-advisor.js <claude|codex|gemini|kimi> <prompt...>');
   console.error('                 or: node scripts/run-provider-advisor.js claude --print "<prompt>"');
   console.error('                 or: node scripts/run-provider-advisor.js gemini --prompt "<prompt>"');
+  console.error('                 or: node scripts/run-provider-advisor.js kimi --prompt "<prompt>"');
 }
 
 function slugify(value) {

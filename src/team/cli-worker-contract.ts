@@ -2,7 +2,7 @@
  * CLI-worker output contract (Option E, plan AC-7).
  *
  * When a /team critic/reviewer stage is routed to an external CLI worker
- * (codex or gemini), the worker is a one-shot process that cannot call
+ * (codex, gemini, or kimi), the worker is a one-shot process that cannot call
  * TaskUpdate directly. To surface a structured verdict back to the team
  * leader, the worker writes a JSON payload to a pre-agreed file path
  * before exit. The leader's worker-completion handler in runtime-v2 reads
@@ -10,7 +10,7 @@
  *
  * Applies to roles in CONTRACT_ROLES (critic, code-reviewer,
  * security-reviewer, test-engineer) when the resolved provider is
- * `codex` or `gemini`. Claude workers participate in team messaging
+ * `codex`, `gemini`, or `kimi`. Claude workers participate in team messaging
  * directly and do not use this contract.
  */
 
@@ -49,7 +49,7 @@ const VALID_SEVERITIES: ReadonlySet<string> = new Set(['critical', 'major', 'min
 
 /**
  * Returns true when a role + provider pair requires the verdict-output contract.
- * External providers (codex/gemini) on reviewer-style roles need it; Claude
+ * External providers (codex/gemini/kimi) on reviewer-style roles need it; Claude
  * teammates speak through the team messaging API directly.
  */
 export function shouldInjectContract(

@@ -105,7 +105,7 @@ OMC exposes two different surfaces:
 | Feature | Terminal CLI | In-session skill | Notes |
 | --- | --- | --- | --- |
 | Setup | `omc setup` | `/setup` or `/omc-setup` | Both are real entrypoints. `/setup` is the easiest plugin-first path. |
-| Ask providers | `omc ask codex "review this patch"` | `/ask codex "review this patch"` | Both route through the same advisor flow. |
+| Ask providers | `omc ask codex "review this patch"` | `/ask codex "review this patch"` | Both route through the same advisor flow. All providers: `claude`, `codex`, `gemini`, `kimi`. |
 | Team orchestration | `omc team 2:codex "review auth flow"` | `/team 3:executor "fix all TypeScript errors"` | Both exist, but they are different runtimes: `omc team` launches tmux CLI workers; `/team` runs the in-session native team workflow. |
 | Autopilot / Ralph / Ultrawork / Deep Interview | — | `/autopilot ...`, `/ralph ...`, `/ultrawork ...`, `/deep-interview ...` | These are in-session skills. There is no `omc autopilot` / `omc ralph` / `omc ultrawork` CLI subcommand in this repo. |
 | Autoresearch | `omc autoresearch` (**hard-deprecated shim**) | `/deep-interview --autoresearch ...` + `/oh-my-claudecode:autoresearch` | Setup stays in deep-interview; execution now belongs to the stateful skill. |
@@ -128,7 +128,7 @@ Starting in **v4.1.7**, **Team** is the canonical orchestration surface in OMC. 
 /team 3:executor "fix all TypeScript errors"
 ```
 
-Use `/team ...` when you want Claude Code's in-session native team workflow. Use `omc team ...` when you want terminal-launched tmux CLI workers (`claude` / `codex` / `gemini` panes).
+Use `/team ...` when you want Claude Code's in-session native team workflow. Use `omc team ...` when you want terminal-launched tmux CLI workers (`claude` / `codex` / `gemini` / `kimi` panes).
 
 Team runs as a staged pipeline:
 
@@ -160,20 +160,22 @@ omc team shutdown auth-review
 
 `/omc-teams` remains as a legacy compatibility skill and now routes to `omc team ...`.
 
-For mixed Codex + Gemini work in one command, use the **`/ccg`** skill (routes via `/ask codex` + `/ask gemini`, then Claude synthesizes):
+For mixed Codex + Gemini work in one command, use the **`/ccg`** skill (routes via `/ask codex` + `/ask gemini`, with optional `/ask kimi`, then Claude synthesizes):
 
 ```bash
 /ccg Review this PR — architecture (Codex) and UI components (Gemini)
+/ccg Refactor auth — Codex (architecture), Gemini (UX), Kimi (implementation)
 ```
 
 | Surface                   | Workers            | Best For                                     |
 | ------------------------- | ------------------ | -------------------------------------------- |
 | `omc team N:codex "..."`  | N Codex CLI panes  | Code review, security analysis, architecture |
 | `omc team N:gemini "..."` | N Gemini CLI panes | UI/UX design, docs, large-context tasks      |
+| `omc team N:kimi "..."`   | N Kimi CLI panes   | Code editing, testing, general research      |
 | `omc team N:claude "..."` | N Claude CLI panes | General tasks via Claude CLI in tmux         |
-| `/ccg`                    | /ask codex + /ask gemini | Tri-model advisor synthesis           |
+| `/ccg`                    | /ask codex + /ask gemini (+ optional /ask kimi) | Multi-model advisor synthesis |
 
-Workers spawn on-demand and die when their task completes — no idle resource usage. Requires `codex` / `gemini` CLIs installed and an active tmux session.
+Workers spawn on-demand and die when their task completes — no idle resource usage. Requires `codex` / `gemini` / `kimi` CLIs installed and an active tmux session.
 
 > **Note: Package naming** — The project is branded as **oh-my-claudecode** (repo, plugin, commands), but the npm package is published as [`oh-my-claude-sisyphus`](https://www.npmjs.com/package/oh-my-claude-sisyphus). If you install or upgrade the CLI tools via npm/bun, use `npm i -g oh-my-claude-sisyphus@latest`.
 
@@ -237,8 +239,8 @@ Multiple strategies for different use cases — from Team-backed orchestration t
 | Mode                    | What it is                                                                              | Use For                                                |
 | ----------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | **Team (recommended)**  | Canonical staged pipeline (`team-plan → team-prd → team-exec → team-verify → team-fix`) | Coordinated Claude agents on a shared task list        |
-| **omc team (CLI)**      | tmux CLI workers — real `claude`/`codex`/`gemini` processes in split-panes              | Codex/Gemini CLI tasks; on-demand spawn, die when done |
-| **ccg**                 | Tri-model advisors via `/ask codex` + `/ask gemini`, Claude synthesizes                   | Mixed backend+UI work needing both Codex and Gemini    |
+| **omc team (CLI)**      | tmux CLI workers — real `claude`/`codex`/`gemini`/`kimi` processes in split-panes              | Codex/Gemini/Kimi CLI tasks; on-demand spawn, die when done |
+| **ccg**                 | Multi-model advisors via `/ask codex` + `/ask gemini` (+ optional `/ask kimi`), Claude synthesizes | Mixed backend+UI work needing external advisor perspectives |
 | **Autopilot**           | Autonomous execution (single lead agent)                                                | End-to-end feature work with minimal ceremony          |
 | **Ultrawork**           | Maximum parallelism (non-team)                                                          | Burst parallel fixes/refactors where Team isn't needed |
 | **Ralph**               | Persistent mode with verify/fix loops                                                   | Tasks that must complete fully (no silent partials)    |
@@ -299,7 +301,7 @@ These shortcuts run **inside a Claude Code / OMC session**, not as terminal CLI 
 | In-session form        | Kind                  | Effect                              | Example                                        |
 | ---------------------- | --------------------- | ----------------------------------- | ---------------------------------------------- |
 | `/team`                | Slash skill           | Canonical Team orchestration        | `/team 3:executor "fix all TypeScript errors"` |
-| `/ccg`                 | Slash skill           | `/ask codex` + `/ask gemini` synthesis | `/ccg review this PR`                       |
+| `/ccg`                 | Slash skill           | `/ask codex` + `/ask gemini` (+ optional `/ask kimi`) synthesis | `/ccg review this PR`                       |
 | `/autopilot` / `autopilot` | Skill / prompt trigger | Full autonomous execution       | `/autopilot "build a todo app"`                |
 | `/ralph` / `ralph`     | Skill / prompt trigger | Persistence mode                   | `/ralph "refactor auth"`                       |
 | `/ultrawork` / `ulw`   | Skill / prompt trigger | Maximum parallelism                | `/ultrawork "fix all errors"`                  |
@@ -326,11 +328,13 @@ Run local provider CLIs and save a markdown artifact under `.omc/artifacts/ask/`
 omc ask claude "review this migration plan"
 omc ask codex --prompt "identify architecture risks"
 omc ask gemini --prompt "propose UI polish ideas"
+omc ask kimi "analyze and improve code quality"
 omc ask claude --agent-prompt executor --prompt "draft implementation steps"
 
 # Inside a Claude Code / OMC session
 /ask claude "review this migration plan"
 /ask codex "identify architecture risks"
+/ask kimi "analyze and improve code quality"
 ```
 
 Canonical env vars:

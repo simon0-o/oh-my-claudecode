@@ -182,6 +182,52 @@ describe('processHook - Environment Kill-Switches', () => {
     });
   });
 
+  describe('Magic keyword delegation', () => {
+    it('should inject team delegation message for codex keyword', async () => {
+      const input: HookInput = {
+        sessionId: 'test-session',
+        prompt: 'ask codex to review this code',
+        directory: '/tmp/test'
+      };
+
+      const result = await processHook('keyword-detector', input);
+
+      expect(result.continue).toBe(true);
+      expect(result.message).toContain('[MAGIC KEYWORD: team]');
+      expect(result.message).toContain('codex');
+      expect(result.message).toContain('omc team');
+    });
+
+    it('should inject team delegation message for gemini keyword', async () => {
+      const input: HookInput = {
+        sessionId: 'test-session',
+        prompt: 'use gemini for UI design',
+        directory: '/tmp/test'
+      };
+
+      const result = await processHook('keyword-detector', input);
+
+      expect(result.continue).toBe(true);
+      expect(result.message).toContain('[MAGIC KEYWORD: team]');
+      expect(result.message).toContain('gemini');
+    });
+
+    it('should inject team delegation message for kimi keyword', async () => {
+      const input: HookInput = {
+        sessionId: 'test-session',
+        prompt: 'ask kimi to analyze this',
+        directory: '/tmp/test'
+      };
+
+      const result = await processHook('keyword-detector', input);
+
+      expect(result.continue).toBe(true);
+      expect(result.message).toContain('[MAGIC KEYWORD: team]');
+      expect(result.message).toContain('kimi');
+      expect(result.message).toContain('omc team');
+    });
+  });
+
   describe('Performance', () => {
     it('should have no performance impact when flags are not set', async () => {
       const input: HookInput = {

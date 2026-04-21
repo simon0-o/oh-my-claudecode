@@ -1100,10 +1100,13 @@ var CLAUDE_FAMILY_HIGH_VARIANTS = {
 };
 var BUILTIN_EXTERNAL_MODEL_DEFAULTS = {
   codexModel: "gpt-5.3-codex",
-  geminiModel: "gemini-3.1-pro-preview"
+  geminiModel: "gemini-3.1-pro-preview",
+  kimiModel: "kimi-k2"
 };
 function getBuiltinExternalDefaultModel(provider) {
-  return provider === "codex" ? BUILTIN_EXTERNAL_MODEL_DEFAULTS.codexModel : BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+  if (provider === "codex") return BUILTIN_EXTERNAL_MODEL_DEFAULTS.codexModel;
+  if (provider === "gemini") return BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+  return BUILTIN_EXTERNAL_MODEL_DEFAULTS.kimiModel;
 }
 
 // src/agents/prompt-helpers.ts
@@ -1435,9 +1438,9 @@ function validateModelName(model) {
   }
 }
 function validateProvider(provider) {
-  if (provider !== "codex" && provider !== "gemini") {
+  if (provider !== "codex" && provider !== "gemini" && provider !== "kimi") {
     throw new Error(
-      `Invalid provider: ${provider}. Must be 'codex' or 'gemini'`
+      `Invalid provider: ${provider}. Must be 'codex', 'gemini', or 'kimi'`
     );
   }
 }
@@ -1648,9 +1651,13 @@ function spawnCliProcess(provider, prompt, model, cwd, timeoutMs) {
       "--dangerously-bypass-approvals-and-sandbox",
       "--skip-git-repo-check"
     ];
-  } else {
+  } else if (provider === "gemini") {
     cmd = "gemini";
     args = ["--approval-mode", "yolo"];
+    if (model) args.push("--model", model);
+  } else {
+    cmd = "kimi";
+    args = ["--print"];
     if (model) args.push("--model", model);
   }
   const child = (0, import_child_process3.spawn)(cmd, args, {
@@ -2231,8 +2238,8 @@ function main() {
   }
   config.teamName = sanitizeName(config.teamName);
   config.workerName = sanitizeName(config.workerName);
-  if (config.provider !== "codex" && config.provider !== "gemini") {
-    console.error(`Invalid provider: ${config.provider}. Must be 'codex' or 'gemini'.`);
+  if (config.provider !== "codex" && config.provider !== "gemini" && config.provider !== "kimi") {
+    console.error(`Invalid provider: ${config.provider}. Must be 'codex', 'gemini', or 'kimi'.`);
     process.exit(1);
   }
   try {

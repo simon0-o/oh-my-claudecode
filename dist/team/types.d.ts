@@ -11,7 +11,7 @@ import type { CanonicalTeamRole, RoleAssignment } from '../shared/types.js';
 export interface BridgeConfig {
     teamName: string;
     workerName: string;
-    provider: 'codex' | 'gemini';
+    provider: 'codex' | 'gemini' | 'kimi';
     model?: string;
     workingDirectory: string;
     pollIntervalMs: number;
@@ -90,7 +90,7 @@ export interface McpWorkerMember {
 export interface HeartbeatData {
     workerName: string;
     teamName: string;
-    provider: 'codex' | 'gemini' | 'claude';
+    provider: 'codex' | 'gemini' | 'claude' | 'kimi';
     pid: number;
     lastPollAt: string;
     currentTaskId?: string;
@@ -110,7 +110,7 @@ export interface ConfigProbeResult {
 /** Sidecar mapping task IDs to execution modes */
 export interface TaskModeMap {
     teamName: string;
-    taskModes: Record<string, 'mcp_codex' | 'mcp_gemini' | 'claude_worker'>;
+    taskModes: Record<string, 'mcp_codex' | 'mcp_gemini' | 'mcp_kimi' | 'claude_worker'>;
 }
 /** Failure sidecar for a task */
 export interface TaskFailureSidecar {
@@ -120,7 +120,7 @@ export interface TaskFailureSidecar {
     lastFailedAt: string;
 }
 /** Worker backend type */
-export type WorkerBackend = 'claude-native' | 'mcp-codex' | 'mcp-gemini' | 'tmux-claude' | 'tmux-codex' | 'tmux-gemini' | 'tmux-cursor';
+export type WorkerBackend = 'claude-native' | 'mcp-codex' | 'mcp-gemini' | 'mcp-kimi' | 'tmux-claude' | 'tmux-codex' | 'tmux-gemini' | 'tmux-kimi' | 'tmux-cursor';
 /** Worker capability tag */
 export type WorkerCapability = 'code-edit' | 'code-review' | 'security-review' | 'architecture' | 'testing' | 'documentation' | 'ui-design' | 'refactoring' | 'research' | 'general';
 /** Team task with required version for optimistic concurrency */
@@ -210,7 +210,7 @@ export interface WorkerInfo {
     name: string;
     index: number;
     role: string;
-    worker_cli?: 'codex' | 'claude' | 'gemini' | 'cursor';
+    worker_cli?: 'codex' | 'claude' | 'gemini' | 'cursor' | 'kimi';
     assigned_tasks: string[];
     pid?: number;
     pane_id?: string;
@@ -221,7 +221,7 @@ export interface WorkerInfo {
     team_state_root?: string;
     /**
      * Verdict-output file path for CLI-worker output contract (AC-7).
-     * Set when the worker was spawned for a reviewer role on codex/gemini.
+     * Set when the worker was spawned for a reviewer role on codex/gemini/kimi.
      * Consumed by the worker-completion handler in runtime-v2.
      */
     output_file?: string;

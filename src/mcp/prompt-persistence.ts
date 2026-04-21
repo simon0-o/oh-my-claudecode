@@ -96,7 +96,7 @@ export function generatePromptId(): string {
  * Options for persisting a prompt
  */
 export interface PersistPromptOptions {
-  provider: 'codex' | 'gemini';
+  provider: 'codex' | 'gemini' | 'kimi';
   agentRole: string;
   model: string;
   files?: string[];
@@ -109,7 +109,7 @@ export interface PersistPromptOptions {
  * Options for persisting a response
  */
 export interface PersistResponseOptions {
-  provider: 'codex' | 'gemini';
+  provider: 'codex' | 'gemini' | 'kimi';
   agentRole: string;
   model: string;
   promptId: string;      // The ID from the corresponding prompt file
@@ -134,7 +134,7 @@ export interface PersistPromptResult {
  * Job status for background execution tracking
  */
 export interface JobStatus {
-  provider: 'codex' | 'gemini';
+  provider: 'codex' | 'gemini' | 'kimi';
   jobId: string;
   slug: string;
   status: 'spawned' | 'running' | 'completed' | 'failed' | 'timeout';
@@ -157,7 +157,7 @@ export interface JobStatus {
  * Metadata passed to background execution functions
  */
 export interface BackgroundJobMeta {
-  provider: 'codex' | 'gemini';
+  provider: 'codex' | 'gemini' | 'kimi';
   jobId: string;
   slug: string;
   agentRole: string;
@@ -258,13 +258,13 @@ export function persistPrompt(options: PersistPromptOptions): PersistPromptResul
  * Get the expected response file path without writing it
  * Useful for returning the path immediately before background execution completes
  *
- * @param provider - The provider (codex or gemini)
+ * @param provider - The provider (codex, gemini, or kimi)
  * @param slug - The slug from the prompt
  * @param promptId - The ID from the prompt
  * @param workingDirectory - Optional working directory
  * @returns The expected file path for the response
  */
-export function getExpectedResponsePath(provider: 'codex' | 'gemini', slug: string, promptId: string, workingDirectory?: string): string {
+export function getExpectedResponsePath(provider: 'codex' | 'gemini' | 'kimi', slug: string, promptId: string, workingDirectory?: string): string {
   const promptsDir = getPromptsDir(workingDirectory);
   const filename = `${provider}-response-${slug}-${promptId}.md`;
   return join(promptsDir, filename);
@@ -321,7 +321,7 @@ export function persistResponse(options: PersistResponseOptions): string | undef
 /**
  * Get the status file path for a background job
  */
-export function getStatusFilePath(provider: 'codex' | 'gemini', slug: string, promptId: string, workingDirectory?: string): string {
+export function getStatusFilePath(provider: 'codex' | 'gemini' | 'kimi', slug: string, promptId: string, workingDirectory?: string): string {
   const promptsDir = getPromptsDir(workingDirectory);
   return join(promptsDir, `${provider}-status-${slug}-${promptId}.json`);
 }
@@ -373,14 +373,14 @@ export function writeJobStatus(status: JobStatus, workingDirectory?: string): vo
  * Look up the working directory that was used when a job was created.
  * Returns undefined if the job was created in the server's CWD (no override).
  */
-export function getJobWorkingDir(provider: 'codex' | 'gemini', jobId: string): string | undefined {
+export function getJobWorkingDir(provider: 'codex' | 'gemini' | 'kimi', jobId: string): string | undefined {
   return jobWorkingDirs.get(`${provider}:${jobId}`);
 }
 
 /**
  * Read job status from disk
  */
-export function readJobStatus(provider: 'codex' | 'gemini', slug: string, promptId: string, workingDirectory?: string): JobStatus | undefined {
+export function readJobStatus(provider: 'codex' | 'gemini' | 'kimi', slug: string, promptId: string, workingDirectory?: string): JobStatus | undefined {
   ensureJobDb(workingDirectory);
   // Try SQLite first if available
   if (isJobDbInitialized()) {
@@ -405,7 +405,7 @@ export function readJobStatus(provider: 'codex' | 'gemini', slug: string, prompt
  * Check if a background job's response is ready
  */
 export function checkResponseReady(
-  provider: 'codex' | 'gemini',
+  provider: 'codex' | 'gemini' | 'kimi',
   slug: string,
   promptId: string,
   workingDirectory?: string
@@ -420,7 +420,7 @@ export function checkResponseReady(
  * Read a completed response, stripping YAML frontmatter
  */
 export function readCompletedResponse(
-  provider: 'codex' | 'gemini',
+  provider: 'codex' | 'gemini' | 'kimi',
   slug: string,
   promptId: string,
   workingDirectory?: string
@@ -450,7 +450,7 @@ export function readCompletedResponse(
 /**
  * List all active (spawned or running) background jobs
  */
-export function listActiveJobs(provider?: 'codex' | 'gemini', workingDirectory?: string): JobStatus[] {
+export function listActiveJobs(provider?: 'codex' | 'gemini' | 'kimi', workingDirectory?: string): JobStatus[] {
   ensureJobDb(workingDirectory);
   // Try SQLite first if available
   if (isJobDbInitialized()) {

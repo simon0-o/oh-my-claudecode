@@ -902,6 +902,32 @@ This article argues that fake popularity signals damage trust in open source.`;
       });
     });
 
+    describe('kimi keyword', () => {
+      it('should detect "ask kimi"', () => {
+        const result = detectKeywordsWithType('ask kimi to analyze');
+        const kimiMatch = result.find((r) => r.type === 'kimi');
+        expect(kimiMatch).toBeDefined();
+      });
+
+      it('should detect "use kimi"', () => {
+        const result = detectKeywordsWithType('use kimi for research');
+        const kimiMatch = result.find((r) => r.type === 'kimi');
+        expect(kimiMatch).toBeDefined();
+      });
+
+      it('should detect "delegate to kimi"', () => {
+        const result = detectKeywordsWithType('delegate to kimi');
+        const kimiMatch = result.find((r) => r.type === 'kimi');
+        expect(kimiMatch).toBeDefined();
+      });
+
+      it('should NOT detect bare kimi keyword', () => {
+        const result = detectKeywordsWithType('kimi is a company');
+        const kimiMatch = result.find((r) => r.type === 'kimi');
+        expect(kimiMatch).toBeUndefined();
+      });
+    });
+
     describe('sanitization false-positive prevention', () => {
       it('should NOT detect codex in URL', () => {
         const result = detectKeywordsWithType('see https://example.com/gpt');
@@ -1115,6 +1141,13 @@ This article argues that fake popularity signals damage trust in open source.`;
       const result = getAllKeywords('ask codex and ask gemini');
       expect(result).toContain('codex');
       expect(result).toContain('gemini');
+    });
+
+    it('should return codex, gemini, and kimi when all present', () => {
+      const result = getAllKeywords('ask codex and ask gemini and ask kimi');
+      expect(result).toContain('codex');
+      expect(result).toContain('gemini');
+      expect(result).toContain('kimi');
     });
 
     it('should return ccg when ccg keyword present', () => {

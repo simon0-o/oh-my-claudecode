@@ -41,9 +41,10 @@ describe('bridge-entry security', () => {
     expect(source).toContain('isDirectory()');
   });
 
-  it('validates provider is codex or gemini', () => {
+  it('validates provider is codex, gemini, or kimi', () => {
     expect(source).toContain("config.provider !== 'codex'");
     expect(source).toContain("config.provider !== 'gemini'");
+    expect(source).toContain("config.provider !== 'kimi'");
   });
 
   it('has signal handlers for graceful cleanup', () => {

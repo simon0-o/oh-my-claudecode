@@ -3,6 +3,7 @@ const availability = vi.hoisted(() => ({
     claude: true,
     codex: false,
     gemini: false,
+    kimi: false,
 }));
 vi.mock('../team/model-contract.js', () => ({
     isCliAvailable: (agentType) => availability[agentType],
@@ -16,6 +17,7 @@ describe('deep-interview provider-aware execution recommendations', () => {
         availability.claude = true;
         availability.codex = false;
         availability.gemini = false;
+        availability.kimi = false;
         if (originalPluginRoot === undefined) {
             delete process.env.CLAUDE_PLUGIN_ROOT;
         }

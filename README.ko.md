@@ -95,16 +95,18 @@ omc team shutdown auth-review
 
 ```bash
 /ccg Review this PR — architecture (Codex) and UI components (Gemini)
+/ccg Refactor auth — Codex (architecture), Gemini (UX), Kimi (implementation)
 ```
 
 | 실행 표면 | 워커 | 최적 용도 |
 |-------|---------|----------|
 | `omc team N:codex "..."` | N개 Codex CLI 창 | 코드 리뷰, 보안 분석, 아키텍처 |
 | `omc team N:gemini "..."` | N개 Gemini CLI 창 | UI/UX 디자인, 문서, 대용량 컨텍스트 |
+| `omc team N:kimi "..."` | N개 Kimi CLI 창 | 코드 편집, 테스트, 일반 연구 |
 | `omc team N:claude "..."` | N개 Claude CLI 창 | tmux에서 Claude CLI를 통한 일반 작업 |
-| `/ccg` | ask-codex + ask-gemini | Codex+Gemini 조언을 Claude가 통합 |
+| `/ccg` | ask-codex + ask-gemini (+ 선택적 ask-kimi) | Codex+Gemini(+Kimi) 조언을 Claude가 통합 |
 
-워커는 요청 시 생성되고 작업 완료 후 종료됩니다 — 유휴 리소스 낭비 없음. `codex` / `gemini` CLI가 설치되어 있고 활성 tmux 세션이 필요합니다.
+워커는 요청 시 생성되고 작업 완료 후 종료됩니다 — 유휴 리소스 낭비 없음. `codex` / `gemini` / `kimi` CLI가 설치되어 있고 활성 tmux 세션이 필요합니다.
 
 > **참고: 패키지 이름** — 프로젝트 브랜드명은 **oh-my-claudecode** (저장소, 플러그인, 명령어)이지만, npm 패키지는 [`oh-my-claude-sisyphus`](https://www.npmjs.com/package/oh-my-claude-sisyphus)로 배포됩니다. npm/bun으로 CLI 도구를 설치할 때는 `npm install -g oh-my-claude-sisyphus`를 사용하세요.
 

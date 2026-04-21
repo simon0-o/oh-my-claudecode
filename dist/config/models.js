@@ -41,6 +41,7 @@ export const CLAUDE_FAMILY_HIGH_VARIANTS = {
 export const BUILTIN_EXTERNAL_MODEL_DEFAULTS = {
     codexModel: 'gpt-5.3-codex',
     geminiModel: 'gemini-3.1-pro-preview',
+    kimiModel: 'kimi-k2',
 };
 /**
  * Centralized Model ID Constants
@@ -129,9 +130,11 @@ export function getClaudeHighVariantFromModel(modelId) {
 }
 /** Get built-in default model for an external provider */
 export function getBuiltinExternalDefaultModel(provider) {
-    return provider === 'codex'
-        ? BUILTIN_EXTERNAL_MODEL_DEFAULTS.codexModel
-        : BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+    if (provider === 'codex')
+        return BUILTIN_EXTERNAL_MODEL_DEFAULTS.codexModel;
+    if (provider === 'gemini')
+        return BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+    return BUILTIN_EXTERNAL_MODEL_DEFAULTS.kimiModel;
 }
 /**
  * Detect whether Claude Code is running on AWS Bedrock.

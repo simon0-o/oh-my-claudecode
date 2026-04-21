@@ -369,6 +369,7 @@ describe('run-provider-advisor script contract', () => {
         ['claude', ['claude', '--prompt', 'nested claude prompt']],
         ['codex', ['codex', '--prompt', 'nested codex prompt']],
         ['gemini', ['gemini', '--prompt', 'nested gemini prompt']],
+        ['kimi', ['kimi', '--prompt', 'nested kimi prompt']],
     ])('strips Claude session env vars for %s advisor spawns', (provider, args) => {
         const wd = mkdtempSync(join(tmpdir(), `omc-ask-${provider}-advisor-env-`));
         try {
@@ -546,6 +547,7 @@ describe('run-provider-advisor script contract', () => {
         ['codex', ['codex', '--prompt', 'short prompt']],
         ['gemini', ['gemini', '--prompt', 'short prompt']],
         ['claude', ['claude', '--prompt', 'short prompt']],
+        ['kimi', ['kimi', '--prompt', 'short prompt']],
     ])('closes stdin for %s on non-Windows to prevent hang in piped environments', (provider, args) => {
         const wd = mkdtempSync(join(tmpdir(), `omc-ask-${provider}-stdin-close-`));
         try {

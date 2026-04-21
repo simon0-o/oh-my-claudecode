@@ -84,7 +84,7 @@ function ensureStateDir(cwd: string): void {
  */
 function rowToJobStatus(row: Record<string, unknown>): JobStatus {
   return {
-    provider: row.provider as "codex" | "gemini",
+    provider: row.provider as "codex" | "gemini" | "kimi",
     jobId: row.job_id as string,
     slug: row.slug as string,
     status: row.status as JobStatus["status"],
@@ -163,10 +163,10 @@ export async function initJobDb(cwd: string): Promise<boolean> {
         value TEXT NOT NULL
       );
 
-      -- Job metadata for Codex/Gemini background jobs
+      -- Job metadata for Codex/Gemini/Kimi background jobs
       CREATE TABLE IF NOT EXISTS jobs (
         job_id TEXT NOT NULL,
-        provider TEXT NOT NULL CHECK (provider IN ('codex', 'gemini')),
+        provider TEXT NOT NULL CHECK (provider IN ('codex', 'gemini', 'kimi')),
         slug TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'spawned' CHECK (status IN ('spawned', 'running', 'completed', 'failed', 'timeout')),
         pid INTEGER,
@@ -331,12 +331,12 @@ export function upsertJob(status: JobStatus, cwd?: string): boolean {
 /**
  * Get a single job by provider and job ID.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @returns The JobStatus if found, null otherwise
  */
 export function getJob(
-  provider: "codex" | "gemini",
+  provider: "codex" | "gemini" | "kimi",
   jobId: string,
   cwd?: string,
 ): JobStatus | null {
@@ -365,7 +365,7 @@ export function getJob(
  * @returns Array of matching JobStatus objects, empty array on failure
  */
 export function getJobsByStatus(
-  provider: "codex" | "gemini" | undefined,
+  provider: "codex" | "gemini" | "kimi" | undefined,
   status: string,
   cwd?: string,
 ): JobStatus[] {
@@ -402,7 +402,7 @@ export function getJobsByStatus(
  * @returns Array of active JobStatus objects, empty array on failure
  */
 export function getActiveJobs(
-  provider?: "codex" | "gemini",
+  provider?: "codex" | "gemini" | "kimi",
   cwd?: string,
 ): JobStatus[] {
   const db = getDb(cwd);
@@ -440,7 +440,7 @@ export function getActiveJobs(
  * @returns Array of recent JobStatus objects, empty array on failure
  */
 export function getRecentJobs(
-  provider?: "codex" | "gemini",
+  provider?: "codex" | "gemini" | "kimi",
   withinMs: number = 60 * 60 * 1000,
   cwd?: string,
 ): JobStatus[] {
@@ -475,13 +475,13 @@ export function getRecentJobs(
  * Partially update a job's fields. Only provided fields are updated;
  * omitted fields are left unchanged.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @param updates - Partial JobStatus with fields to update
  * @returns true if the update succeeded, false on failure
  */
 export function updateJobStatus(
-  provider: "codex" | "gemini",
+  provider: "codex" | "gemini" | "kimi",
   jobId: string,
   updates: Partial<JobStatus>,
   cwd?: string,
@@ -552,12 +552,12 @@ export function updateJobStatus(
 /**
  * Delete a job record by provider and job ID.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @returns true if deletion succeeded, false on failure
  */
 export function deleteJob(
-  provider: "codex" | "gemini",
+  provider: "codex" | "gemini" | "kimi",
   jobId: string,
   cwd?: string,
 ): boolean {

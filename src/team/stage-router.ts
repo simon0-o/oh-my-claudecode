@@ -127,12 +127,12 @@ function resolveClaudeModel(
 /**
  * Resolve a user-supplied `model` value for an external provider worker.
  *
- * Tier names are Claude-centric and not meaningful for codex/gemini, so tier
+ * Tier names are Claude-centric and not meaningful for codex/gemini/kimi, so tier
  * input (or absent input) maps to the provider's builtin default. Only an
  * explicit non-tier model ID is passed through.
  */
 function resolveExternalModel(
-  provider: 'codex' | 'gemini',
+  provider: 'codex' | 'gemini' | 'kimi',
   raw: string | undefined,
   cfg: PluginConfig,
 ): string {
@@ -143,7 +143,10 @@ function resolveExternalModel(
   if (provider === 'codex') {
     return defaults?.codexModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.codexModel;
   }
-  return defaults?.geminiModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+  if (provider === 'gemini') {
+    return defaults?.geminiModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+  }
+  return defaults?.kimiModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.kimiModel;
 }
 
 /**
@@ -207,7 +210,7 @@ export function buildResolvedRoutingSnapshot(
     const primary = resolveRoleAssignment(role, cfg);
     // Fallback is always a Claude worker. Its model is the Claude-tier
     // resolution of the role's spec (so tier stickiness survives fallback),
-    // NOT primary.model (which may be a codex/gemini model ID).
+    // NOT primary.model (which may be a codex/gemini/kimi model ID).
     // When primary is external and spec.model is an explicit non-tier id
     // (e.g., 'gpt-5.3-codex'), drop it for fallback so claude doesn't
     // receive an external model id; tier names always survive.

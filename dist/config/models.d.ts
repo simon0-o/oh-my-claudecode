@@ -13,6 +13,7 @@ export declare const CLAUDE_FAMILY_HIGH_VARIANTS: Record<ClaudeModelFamily, stri
 export declare const BUILTIN_EXTERNAL_MODEL_DEFAULTS: {
     readonly codexModel: "gpt-5.3-codex";
     readonly geminiModel: "gemini-3.1-pro-preview";
+    readonly kimiModel: "kimi-k2";
 };
 export declare function hasTierModelEnvOverrides(): boolean;
 export declare function getDefaultModelHigh(): string;
@@ -34,7 +35,7 @@ export declare function resolveClaudeFamily(modelId: string): ClaudeModelFamily 
  */
 export declare function getClaudeHighVariantFromModel(modelId: string): string | null;
 /** Get built-in default model for an external provider */
-export declare function getBuiltinExternalDefaultModel(provider: 'codex' | 'gemini'): string;
+export declare function getBuiltinExternalDefaultModel(provider: 'codex' | 'gemini' | 'kimi'): string;
 /**
  * Detect whether Claude Code is running on AWS Bedrock.
  *

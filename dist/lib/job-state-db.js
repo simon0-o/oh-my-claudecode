@@ -134,10 +134,10 @@ export async function initJobDb(cwd) {
         value TEXT NOT NULL
       );
 
-      -- Job metadata for Codex/Gemini background jobs
+      -- Job metadata for Codex/Gemini/Kimi background jobs
       CREATE TABLE IF NOT EXISTS jobs (
         job_id TEXT NOT NULL,
-        provider TEXT NOT NULL CHECK (provider IN ('codex', 'gemini')),
+        provider TEXT NOT NULL CHECK (provider IN ('codex', 'gemini', 'kimi')),
         slug TEXT NOT NULL,
         status TEXT NOT NULL DEFAULT 'spawned' CHECK (status IN ('spawned', 'running', 'completed', 'failed', 'timeout')),
         pid INTEGER,
@@ -281,7 +281,7 @@ export function upsertJob(status, cwd) {
 /**
  * Get a single job by provider and job ID.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @returns The JobStatus if found, null otherwise
  */
@@ -393,7 +393,7 @@ export function getRecentJobs(provider, withinMs = 60 * 60 * 1000, cwd) {
  * Partially update a job's fields. Only provided fields are updated;
  * omitted fields are left unchanged.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @param updates - Partial JobStatus with fields to update
  * @returns true if the update succeeded, false on failure
@@ -461,7 +461,7 @@ export function updateJobStatus(provider, jobId, updates, cwd) {
 /**
  * Delete a job record by provider and job ID.
  *
- * @param provider - The provider ('codex' or 'gemini')
+ * @param provider - The provider ('codex', 'gemini', or 'kimi')
  * @param jobId - The unique job identifier
  * @returns true if deletion succeeded, false on failure
  */

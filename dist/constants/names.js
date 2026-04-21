@@ -26,6 +26,7 @@ export const TOOL_CATEGORIES = {
     INTEROP: 'interop',
     CODEX: 'codex',
     GEMINI: 'gemini',
+    KIMI: 'kimi',
     SHARED_MEMORY: 'shared-memory',
     DEEPINIT: 'deepinit',
     WIKI: 'wiki',

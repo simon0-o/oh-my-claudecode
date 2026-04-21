@@ -17,7 +17,7 @@ export declare function recordTaskCompletionUsage(args: {
     taskId: string;
     promptFile: string;
     outputFile: string;
-    provider: "codex" | "gemini";
+    provider: "codex" | "gemini" | "kimi";
     startedAt: number;
     startedAtIso: string;
 }): void;

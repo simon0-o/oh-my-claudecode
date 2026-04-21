@@ -128,8 +128,8 @@ function validateModelName(model) {
 }
 /** Validate provider is one of allowed values */
 function validateProvider(provider) {
-    if (provider !== "codex" && provider !== "gemini") {
-        throw new Error(`Invalid provider: ${provider}. Must be 'codex' or 'gemini'`);
+    if (provider !== "codex" && provider !== "gemini" && provider !== "kimi") {
+        throw new Error(`Invalid provider: ${provider}. Must be 'codex', 'gemini', or 'kimi'`);
     }
 }
 /** Maximum stdout/stderr buffer size (10MB) */
@@ -352,9 +352,15 @@ function spawnCliProcess(provider, prompt, model, cwd, timeoutMs) {
             "--skip-git-repo-check",
         ];
     }
-    else {
+    else if (provider === "gemini") {
         cmd = "gemini";
         args = ["--approval-mode", "yolo"];
+        if (model)
+            args.push("--model", model);
+    }
+    else {
+        cmd = "kimi";
+        args = ["--print"];
         if (model)
             args.push("--model", model);
     }

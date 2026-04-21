@@ -12,7 +12,7 @@ import { loadConfig } from '../../config/loader.js';
 const HELP_TOKENS = new Set(['--help', '-h', 'help']);
 const MIN_WORKER_COUNT = 1;
 const MAX_WORKER_COUNT = 20;
-const VALID_TEAM_CLI_AGENT_TYPES = new Set(['claude', 'codex', 'gemini']);
+const VALID_TEAM_CLI_AGENT_TYPES = new Set(['claude', 'codex', 'gemini', 'kimi']);
 const DEFAULT_TEAM_CLI_AGENT_TYPE = 'claude';
 const TEAM_HELP = `
 Usage: omc team [N:agent-type[:role]] [--new-window] "<task description>"

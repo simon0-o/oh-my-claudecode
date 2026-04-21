@@ -540,7 +540,7 @@ async function spawnV2Worker(opts: SpawnV2WorkerOptions): Promise<SpawnV2WorkerR
   const usePromptMode = isPromptModeAgent(opts.agentType);
 
   // AC-7: render the CLI-worker output contract when a reviewer-style role
-  // is routed to an external provider (codex/gemini). Claude workers speak
+  // is routed to an external provider (codex/gemini/kimi). Claude workers speak
   // through the team messaging API and do not use the verdict-file contract.
   const injectContract = shouldInjectContract(opts.role ?? null, opts.agentType);
   const outputFile = injectContract && opts.role
@@ -577,7 +577,7 @@ async function spawnV2Worker(opts: SpawnV2WorkerOptions): Promise<SpawnV2WorkerR
   // For Claude agents on Bedrock/Vertex, resolve the provider-specific model
   // so workers don't fall back to invalid Anthropic API model names. (#1695)
   // Snapshot-provided model (from resolved_routing) takes precedence so
-  // per-role routing (codex/gemini/claude-tier) is honored at spawn time.
+  // per-role routing (codex/gemini/kimi/claude-tier) is honored at spawn time.
   const modelForAgent = opts.model ?? (() => {
     if (opts.agentType === 'codex') {
       return process.env.OMC_EXTERNAL_MODELS_DEFAULT_CODEX_MODEL
@@ -587,6 +587,11 @@ async function spawnV2Worker(opts: SpawnV2WorkerOptions): Promise<SpawnV2WorkerR
     if (opts.agentType === 'gemini') {
       return process.env.OMC_EXTERNAL_MODELS_DEFAULT_GEMINI_MODEL
         || process.env.OMC_GEMINI_DEFAULT_MODEL
+        || undefined;
+    }
+    if (opts.agentType === 'kimi') {
+      return process.env.OMC_EXTERNAL_MODELS_DEFAULT_KIMI_MODEL
+        || process.env.OMC_KIMI_DEFAULT_MODEL
         || undefined;
     }
     // Claude agents: resolve Bedrock/Vertex model when on those providers
@@ -601,7 +606,7 @@ async function spawnV2Worker(opts: SpawnV2WorkerOptions): Promise<SpawnV2WorkerR
     model: modelForAgent,
   });
 
-  // For prompt-mode agents (codex, gemini), keep the full instruction in
+  // For prompt-mode agents (codex, gemini, kimi), keep the full instruction in
   // inbox.md and pass only a short file-pointer prompt via CLI args. This
   // avoids echoing reviewer/seed prompt text into tmux scrollback.
   if (usePromptMode) {
@@ -747,7 +752,7 @@ export async function startTeamV2(config: StartTeamV2Config): Promise<TeamRuntim
     }
   }
   // Best-effort resolve extra providers referenced by the routing snapshot
-  // (codex/gemini critic, reviewer, etc.). Missing binaries are tolerated —
+  // (codex/gemini/kimi critic, reviewer, etc.). Missing binaries are tolerated —
   // the spawn path falls back to the snapshot's Claude fallback (AC-8).
   for (const { primary } of Object.values(resolvedRouting)) {
     const provider = primary.provider as CliAgentType;

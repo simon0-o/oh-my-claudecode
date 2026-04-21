@@ -32,6 +32,18 @@ describe('capabilities', () => {
             expect(caps).toContain('documentation');
             expect(caps).toContain('research');
         });
+        it('returns capabilities for mcp-kimi', () => {
+            const caps = getDefaultCapabilities('mcp-kimi');
+            expect(caps).toContain('code-edit');
+            expect(caps).toContain('testing');
+            expect(caps).toContain('general');
+        });
+        it('returns capabilities for tmux-kimi', () => {
+            const caps = getDefaultCapabilities('tmux-kimi');
+            expect(caps).toContain('code-edit');
+            expect(caps).toContain('testing');
+            expect(caps).toContain('general');
+        });
         it('returns a copy, not a reference', () => {
             const caps1 = getDefaultCapabilities('claude-native');
             const caps2 = getDefaultCapabilities('claude-native');

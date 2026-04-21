@@ -5,7 +5,7 @@ import { normalizeToCcAlias } from '../features/delegation-enforcer.js';
 import { isBedrock, isVertexAI, isProviderSpecificModelId } from '../config/models.js';
 import { isExternalLLMDisabled } from '../lib/security-config.js';
 
-export type CliAgentType = 'claude' | 'codex' | 'gemini' | 'cursor';
+export type CliAgentType = 'claude' | 'codex' | 'gemini' | 'cursor' | 'kimi';
 
 export interface CliAgentContract {
   agentType: CliAgentType;
@@ -242,6 +242,21 @@ const CONTRACTS: Record<CliAgentType, CliAgentContract> = {
       return rawOutput.trim();
     },
   },
+  kimi: {
+    agentType: 'kimi',
+    binary: 'kimi',
+    installInstructions: 'Install Kimi CLI: pip install kimi-cli (or see https://platform.moonshot.cn/docs)',
+    supportsPromptMode: true,
+    promptModeFlag: '-p',
+    buildLaunchArgs(model?: string, extraFlags: string[] = []): string[] {
+      const args = ['--print'];
+      if (model) args.push('--model', model);
+      return [...args, ...extraFlags];
+    },
+    parseOutput(rawOutput: string): string {
+      return rawOutput.trim();
+    },
+  },
 };
 
 export function getContract(agentType: CliAgentType): CliAgentContract {
@@ -362,6 +377,8 @@ const WORKER_MODEL_ENV_ALLOWLIST = [
   'OMC_CODEX_DEFAULT_MODEL',
   'OMC_EXTERNAL_MODELS_DEFAULT_GEMINI_MODEL',
   'OMC_GEMINI_DEFAULT_MODEL',
+  'OMC_EXTERNAL_MODELS_DEFAULT_KIMI_MODEL',
+  'OMC_KIMI_DEFAULT_MODEL',
 ] as const;
 
 export function getWorkerEnv(

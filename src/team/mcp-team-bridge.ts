@@ -166,9 +166,9 @@ function validateModelName(model: string | undefined): void {
 
 /** Validate provider is one of allowed values */
 function validateProvider(provider: string): void {
-  if (provider !== "codex" && provider !== "gemini") {
+  if (provider !== "codex" && provider !== "gemini" && provider !== "kimi") {
     throw new Error(
-      `Invalid provider: ${provider}. Must be 'codex' or 'gemini'`,
+      `Invalid provider: ${provider}. Must be 'codex', 'gemini', or 'kimi'`,
     );
   }
 }
@@ -368,7 +368,7 @@ export function recordTaskCompletionUsage(args: {
   taskId: string;
   promptFile: string;
   outputFile: string;
-  provider: "codex" | "gemini";
+  provider: "codex" | "gemini" | "kimi";
   startedAt: number;
   startedAtIso: string;
 }): void {
@@ -448,7 +448,7 @@ function parseCodexOutput(output: string): string {
  * This allows the bridge to kill the child on shutdown while still awaiting the result.
  */
 function spawnCliProcess(
-  provider: "codex" | "gemini",
+  provider: "codex" | "gemini" | "kimi",
   prompt: string,
   model: string | undefined,
   cwd: string,
@@ -471,9 +471,13 @@ function spawnCliProcess(
       "--dangerously-bypass-approvals-and-sandbox",
       "--skip-git-repo-check",
     ];
-  } else {
+  } else if (provider === "gemini") {
     cmd = "gemini";
     args = ["--approval-mode", "yolo"];
+    if (model) args.push("--model", model);
+  } else {
+    cmd = "kimi";
+    args = ["--print"];
     if (model) args.push("--model", model);
   }
 

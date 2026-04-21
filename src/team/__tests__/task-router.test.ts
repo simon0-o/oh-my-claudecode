@@ -19,7 +19,7 @@ describe('task-router', () => {
     rmSync(testDir, { recursive: true, force: true });
   });
 
-  function registerWorker(name: string, provider: 'codex' | 'gemini' = 'codex', status: 'polling' | 'executing' | 'quarantined' = 'polling') {
+  function registerWorker(name: string, provider: 'codex' | 'gemini' | 'kimi' = 'codex', status: 'polling' | 'executing' | 'quarantined' = 'polling') {
     registerMcpWorker(teamName, name, provider, provider === 'codex' ? 'gpt-5.3-codex' : 'gemini-3-pro', `${teamName}-${name}`, testDir, testDir);
     writeHeartbeat(testDir, {
       workerName: name,

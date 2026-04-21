@@ -23,7 +23,7 @@ The `swarm` compatibility alias was removed in #1131.
 ### Parameters
 
 - **N** - Number of teammate agents (1-20). Optional; defaults to auto-sizing based on task decomposition.
-- **agent-type** - OMC agent to spawn for the `team-exec` stage (e.g., executor, debugger, designer, codex, gemini). Optional; defaults to stage-aware routing. Use `codex` to spawn Codex CLI workers or `gemini` for Gemini CLI workers (requires respective CLIs installed). See Stage Agent Routing below.
+- **agent-type** - OMC agent to spawn for the `team-exec` stage (e.g., executor, debugger, designer, codex, gemini, kimi). Optional; defaults to stage-aware routing. Use `codex` to spawn Codex CLI workers, `gemini` for Gemini CLI workers, or `kimi` for Kimi CLI workers (requires respective CLIs installed). See Stage Agent Routing below.
 - **task** - High-level task to decompose and distribute among teammates
 - **ralph** - Optional modifier. When present, wraps the team pipeline in Ralph's persistence loop (retry on failure, architect verification before completion). See Team + Ralph Composition below.
 
@@ -39,6 +39,8 @@ The `swarm` compatibility alias was removed in #1131.
 /team 2:codex "review architecture and suggest improvements"
 # With Gemini CLI workers (requires: npm install -g @google/gemini-cli)
 /team 2:gemini "redesign the UI components"
+# With Kimi CLI workers (requires: pip install kimi-cli)
+/team 2:kimi "analyze and improve code quality"
 # Mixed: Codex for backend analysis, Gemini for frontend (use /ccg instead for this)
 ```
 
@@ -326,7 +328,11 @@ For tasks with dependencies, use `TaskUpdate` after creation:
 
 ### Phase 5: Spawn Teammates
 
-Spawn N teammates using `Task` with `team_name` and `name` parameters. Each teammate gets the team worker preamble (see below) plus their specific assignment.
+There are **two distinct spawn paths** depending on worker type:
+
+#### Path A: Claude workers (native team agents)
+
+Spawn Claude teammates using `Task` with `team_name` and `name` parameters. Each teammate gets the team worker preamble (see below) plus their specific assignment.
 
 ```json
 {
@@ -346,12 +352,34 @@ Spawn N teammates using `Task` with `team_name` and `name` parameters. Each team
 }
 ```
 
-**Side effects:**
+#### Path B: CLI workers (codex / gemini / kimi)
+
+When the requested agent-type is a non-Claude CLI provider, **do NOT use the `Task` tool** — the `Task` tool only supports Claude subagent types and will fail with "not a valid type" for codex/gemini/kimi.
+
+Instead, spawn CLI workers via the `omc team` CLI command:
+
+```bash
+omc team <N>:<agent-type> "<task>"
+```
+
+Examples:
+```bash
+omc team 2:codex "refactor auth module"
+omc team 1:gemini "redesign UI components"
+omc team 2:kimi "implement the payment flow"
+```
+
+Under the hood this creates tmux panes and executes the provider CLI directly (e.g., `kimi --print -p "<task>"`). The CLI worker reads files, makes changes, and writes results to an output file — all within the working directory.
+
+**Response for CLI workers:**
+The `omc team` command returns a team config path. The lead then monitors the tmux pane output and outbox files for completion, rather than receiving `SendMessage` from a Claude subagent.
+
+**Side effects (both paths):**
 - Teammate added to `config.json` members array
 - An **internal task** is auto-created (with `metadata._internal: true`) tracking the agent lifecycle
 - Internal tasks appear in `TaskList` output -- filter them when counting real tasks
 
-**IMPORTANT:** Spawn all teammates in parallel (they are background agents). Do NOT wait for one to finish before spawning the next.
+**IMPORTANT:** Spawn all teammates in parallel. Do NOT wait for one to finish before spawning the next.
 
 ### Phase 6: Monitor
 
@@ -491,6 +519,7 @@ When composing teammate prompts, append a short addendum based on worker type:
 - `claude_worker`: Emphasize strict TaskList/TaskUpdate/SendMessage loop and no orchestration commands.
 - `codex_worker`: Emphasize CLI API lifecycle (`omc team api ... --json`) and explicit failure ACKs with stderr.
 - `gemini_worker`: Emphasize bounded file ownership and milestone ACKs after each completed sub-step.
+- `kimi_worker`: Emphasize concise, tool-oriented execution and structured progress summaries.
 
 This addendum must preserve the core rule: **worker = executor only, never leader/orchestrator**.
 
@@ -587,9 +616,9 @@ This scans for processes matching the team name whose config no longer exists, a
 
 **IMPORTANT:** The `request_id` is provided in the shutdown request message that the teammate receives. The teammate must extract it and pass it back. Do NOT fabricate request IDs.
 
-## CLI Workers (Codex and Gemini)
+## CLI Workers (Codex, Gemini, and Kimi)
 
-The team skill supports **hybrid execution** combining Claude agent teammates with external CLI workers (Codex CLI and Gemini CLI). Both types can make code changes -- they differ in capabilities and cost. These are standalone CLI tools, not MCP servers.
+The team skill supports **hybrid execution** combining Claude agent teammates with external CLI workers (Codex CLI, Gemini CLI, and Kimi CLI). All three types can make code changes -- they differ in capabilities and cost. These are standalone CLI tools, not MCP servers.
 
 ### Execution Modes
 
@@ -600,6 +629,7 @@ Tasks are tagged with an execution mode during decomposition:
 | `claude_worker` | Claude agent | Full Claude Code tool access (Read/Write/Edit/Bash/Task). Best for tasks needing Claude's reasoning + iterative tool use. |
 | `codex_worker` | Codex CLI (tmux pane) | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for code review, security analysis, refactoring, architecture. Requires `npm install -g @openai/codex`. |
 | `gemini_worker` | Gemini CLI (tmux pane) | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for UI/design work, documentation, large-context tasks. Requires `npm install -g @google/gemini-cli`. |
+| `kimi_worker` | Kimi CLI (tmux pane) | Full filesystem access in working_directory. Runs autonomously via tmux pane. Best for code editing, testing, general research. Requires `pip install kimi-cli`. |
 
 ### How CLI Workers Operate
 
@@ -888,7 +918,7 @@ Optional settings live in `.claude/omc.jsonc` (project) or `~/.config/claude-omc
 ```
 
 - **ops.maxAgents** - Maximum teammates (default: 20)
-- **ops.defaultAgentType** - CLI provider when a `/team` invocation does not specify one (`claude` | `codex` | `gemini`, default: `claude`)
+- **ops.defaultAgentType** - CLI provider when a `/team` invocation does not specify one (`claude` | `codex` | `gemini` | `kimi`, default: `claude`)
 - **ops.monitorIntervalMs** - How often to poll `TaskList` (default: 30s)
 - **ops.shutdownTimeoutMs** - How long to wait for shutdown responses (default: 15s)
 
@@ -937,7 +967,7 @@ User-friendly aliases normalize via `normalizeDelegationRole()` — e.g. `review
 
 ### Spec fields (`TeamRoleAssignmentSpec`)
 
-- **provider** — `"claude" | "codex" | "gemini"`. Omitted → defaults to `claude`.
+- **provider** — `"claude" | "codex" | "gemini" | "kimi"`. Omitted → defaults to `claude`.
 - **model** — tier name (`"HIGH" | "MEDIUM" | "LOW"`) or an explicit model ID. Tiers resolve through `routing.tierModels`.
 - **agent** — optional Claude agent name (e.g. `"critic"`, `"executor"`). Only honored when the resolved provider is `claude`.
 

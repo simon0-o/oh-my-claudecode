@@ -364,7 +364,7 @@ export function loadEnvConfig() {
     }
     if (process.env.OMC_DELEGATION_ROUTING_DEFAULT_PROVIDER) {
         const provider = process.env.OMC_DELEGATION_ROUTING_DEFAULT_PROVIDER;
-        if (["claude", "codex", "gemini"].includes(provider)) {
+        if (["claude", "codex", "gemini", "kimi"].includes(provider)) {
             config.delegationRouting = {
                 ...config.delegationRouting,
                 defaultProvider: provider,
@@ -414,7 +414,7 @@ function warnOnDeprecatedDelegationRouting(config) {
  */
 const CANONICAL_TEAM_ROLE_SET = new Set(CANONICAL_TEAM_ROLES);
 const KNOWN_AGENT_NAME_SET = new Set(KNOWN_AGENT_NAMES);
-const TEAM_ROLE_PROVIDERS = new Set(["claude", "codex", "gemini"]);
+const TEAM_ROLE_PROVIDERS = new Set(["claude", "codex", "gemini", "kimi"]);
 const TEAM_ROLE_TIERS = new Set(["HIGH", "MEDIUM", "LOW"]);
 export function validateTeamConfig(config) {
     const team = config.team;
@@ -895,7 +895,7 @@ export function generateConfigSchema() {
                     },
                     defaultProvider: {
                         type: "string",
-                        enum: ["claude", "codex", "gemini"],
+                        enum: ["claude", "codex", "gemini", "kimi"],
                         default: "claude",
                         description: "Default provider for delegation routing when no specific role mapping exists",
                     },
@@ -907,7 +907,7 @@ export function generateConfigSchema() {
                             properties: {
                                 provider: {
                                     type: "string",
-                                    enum: ["claude", "codex", "gemini"],
+                                    enum: ["claude", "codex", "gemini", "kimi"],
                                 },
                                 tool: { type: "string", enum: ["Task"] },
                                 model: { type: "string" },
@@ -929,7 +929,7 @@ export function generateConfigSchema() {
                             maxAgents: { type: "integer", minimum: 1 },
                             defaultAgentType: {
                                 type: "string",
-                                enum: ["claude", "codex", "gemini"],
+                                enum: ["claude", "codex", "gemini", "kimi"],
                                 default: "claude",
                             },
                             monitorIntervalMs: { type: "integer", minimum: 1 },
@@ -943,7 +943,7 @@ export function generateConfigSchema() {
                         additionalProperties: {
                             type: "object",
                             properties: {
-                                provider: { type: "string", enum: ["claude", "codex", "gemini"] },
+                                provider: { type: "string", enum: ["claude", "codex", "gemini", "kimi"] },
                                 model: { type: "string" },
                                 agent: { type: "string" },
                             },

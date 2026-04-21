@@ -44,6 +44,13 @@ function agentTypeGuidance(agentType) {
                 '- Keep commit-sized changes scoped to assigned files only; no broad refactors.',
                 `- CRITICAL: You MUST run \`${claimTaskCommand}\` before starting work and \`${transitionTaskStatusCommand}\` when done. Do not exit without transitioning the task status.`,
             ].join('\n');
+        case 'kimi':
+            return [
+                '### Agent-Type Guidance (kimi)',
+                '- Prefer concise, tool-oriented execution. Use file edits and shell commands directly.',
+                '- Report progress in structured summaries after each significant step.',
+                `- CRITICAL: You MUST run \`${claimTaskCommand}\` before starting work and \`${transitionTaskStatusCommand}\` when done. Do not exit without transitioning the task status.`,
+            ].join('\n');
         case 'cursor':
             return [
                 '### Agent-Type Guidance (cursor)',

@@ -157,7 +157,7 @@ export function persistPrompt(options) {
  * Get the expected response file path without writing it
  * Useful for returning the path immediately before background execution completes
  *
- * @param provider - The provider (codex or gemini)
+ * @param provider - The provider (codex, gemini, or kimi)
  * @param slug - The slug from the prompt
  * @param promptId - The ID from the prompt
  * @param workingDirectory - Optional working directory

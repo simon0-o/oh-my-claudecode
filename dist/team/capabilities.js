@@ -4,9 +4,11 @@ const DEFAULT_CAPABILITIES = {
     'claude-native': ['code-edit', 'testing', 'general'],
     'mcp-codex': ['code-review', 'security-review', 'architecture', 'refactoring'],
     'mcp-gemini': ['ui-design', 'documentation', 'research', 'code-edit'],
+    'mcp-kimi': ['code-edit', 'testing', 'general', 'research'],
     'tmux-claude': ['code-edit', 'testing', 'general'],
     'tmux-codex': ['code-review', 'security-review', 'architecture', 'refactoring'],
     'tmux-gemini': ['ui-design', 'documentation', 'research', 'code-edit'],
+    'tmux-kimi': ['code-edit', 'testing', 'general', 'research'],
     'tmux-cursor': ['code-edit', 'refactoring', 'general'],
 };
 /**

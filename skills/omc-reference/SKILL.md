@@ -43,7 +43,7 @@ Prefix: `oh-my-claudecode:`. See `agents/*.md` for full prompts.
 ### External AI / orchestration
 - `/team N:executor "task"`
 - `omc team N:codex|gemini "..."`
-- `omc ask <claude|codex|gemini>`
+- `omc ask <claude|codex|gemini|kimi>`
 - `/ccg`
 
 ### OMC state
@@ -73,7 +73,7 @@ Invoke built-in workflows via `/oh-my-claudecode:<name>`.
 - `ultrawork` — high-throughput parallel execution
 - `visual-verdict` — structured visual QA verdicts
 - `team` — coordinated team orchestration
-- `ccg` — Codex + Gemini + Claude synthesis lane
+- `ccg` — Codex + Gemini (+ optional Kimi) + Claude synthesis lane
 - `ultraqa` — QA cycle: test, verify, fix, repeat
 - `omc-plan` — planning workflow and `/plan`-safe alias
 - `ralplan` — consensus planning workflow

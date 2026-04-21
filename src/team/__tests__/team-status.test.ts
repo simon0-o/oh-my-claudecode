@@ -42,7 +42,7 @@ function writeHeartbeatFile(data: HeartbeatData): void {
   atomicWriteJson(hbPath, data);
 }
 
-function makeWorker(name: string, provider: 'codex' | 'gemini' = 'codex'): McpWorkerMember {
+function makeWorker(name: string, provider: 'codex' | 'gemini' | 'kimi' = 'codex'): McpWorkerMember {
   return {
     agentId: `${name}@${TEST_TEAM}`,
     name,
@@ -56,7 +56,7 @@ function makeWorker(name: string, provider: 'codex' | 'gemini' = 'codex'): McpWo
   };
 }
 
-function makeHeartbeat(workerName: string, provider: 'codex' | 'gemini' = 'codex', ageMs: number = 0): HeartbeatData {
+function makeHeartbeat(workerName: string, provider: 'codex' | 'gemini' | 'kimi' = 'codex', ageMs: number = 0): HeartbeatData {
   return {
     workerName,
     teamName: TEST_TEAM,

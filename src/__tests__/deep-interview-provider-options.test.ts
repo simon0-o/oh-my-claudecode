@@ -4,10 +4,11 @@ const availability = vi.hoisted(() => ({
   claude: true,
   codex: false,
   gemini: false,
+  kimi: false,
 }));
 
 vi.mock('../team/model-contract.js', () => ({
-  isCliAvailable: (agentType: 'claude' | 'codex' | 'gemini') => availability[agentType],
+  isCliAvailable: (agentType: 'claude' | 'codex' | 'gemini' | 'kimi') => availability[agentType],
 }));
 
 import { clearSkillsCache, getBuiltinSkill } from '../features/builtin-skills/skills.js';
@@ -21,6 +22,7 @@ describe('deep-interview provider-aware execution recommendations', () => {
     availability.claude = true;
     availability.codex = false;
     availability.gemini = false;
+    availability.kimi = false;
     if (originalPluginRoot === undefined) {
       delete process.env.CLAUDE_PLUGIN_ROOT;
     } else {

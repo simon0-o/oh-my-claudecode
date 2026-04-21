@@ -3026,7 +3026,8 @@ var init_models = __esm({
     };
     BUILTIN_EXTERNAL_MODEL_DEFAULTS = {
       codexModel: "gpt-5.3-codex",
-      geminiModel: "gemini-3.1-pro-preview"
+      geminiModel: "gemini-3.1-pro-preview",
+      kimiModel: "kimi-k2"
     };
   }
 });
@@ -3369,7 +3370,7 @@ function loadEnvConfig() {
   }
   if (process.env.OMC_DELEGATION_ROUTING_DEFAULT_PROVIDER) {
     const provider = process.env.OMC_DELEGATION_ROUTING_DEFAULT_PROVIDER;
-    if (["claude", "codex", "gemini"].includes(provider)) {
+    if (["claude", "codex", "gemini", "kimi"].includes(provider)) {
       config.delegationRouting = {
         ...config.delegationRouting,
         defaultProvider: provider
@@ -3531,7 +3532,7 @@ var init_loader = __esm({
     DEFAULT_CONFIG = buildDefaultConfig();
     CANONICAL_TEAM_ROLE_SET = new Set(CANONICAL_TEAM_ROLES);
     KNOWN_AGENT_NAME_SET = new Set(KNOWN_AGENT_NAMES);
-    TEAM_ROLE_PROVIDERS = /* @__PURE__ */ new Set(["claude", "codex", "gemini"]);
+    TEAM_ROLE_PROVIDERS = /* @__PURE__ */ new Set(["claude", "codex", "gemini", "kimi"]);
     TEAM_ROLE_TIERS = /* @__PURE__ */ new Set(["HIGH", "MEDIUM", "LOW"]);
   }
 });
@@ -4483,6 +4484,21 @@ var init_model_contract = __esm({
         parseOutput(rawOutput) {
           return rawOutput.trim();
         }
+      },
+      kimi: {
+        agentType: "kimi",
+        binary: "kimi",
+        installInstructions: "Install Kimi CLI: pip install kimi-cli (or see https://platform.moonshot.cn/docs)",
+        supportsPromptMode: true,
+        promptModeFlag: "-p",
+        buildLaunchArgs(model, extraFlags = []) {
+          const args = ["--print"];
+          if (model) args.push("--model", model);
+          return [...args, ...extraFlags];
+        },
+        parseOutput(rawOutput) {
+          return rawOutput.trim();
+        }
       }
     };
     WORKER_MODEL_ENV_ALLOWLIST = [
@@ -4503,7 +4519,9 @@ var init_model_contract = __esm({
       "OMC_EXTERNAL_MODELS_DEFAULT_CODEX_MODEL",
       "OMC_CODEX_DEFAULT_MODEL",
       "OMC_EXTERNAL_MODELS_DEFAULT_GEMINI_MODEL",
-      "OMC_GEMINI_DEFAULT_MODEL"
+      "OMC_GEMINI_DEFAULT_MODEL",
+      "OMC_EXTERNAL_MODELS_DEFAULT_KIMI_MODEL",
+      "OMC_KIMI_DEFAULT_MODEL"
     ];
   }
 });
@@ -4552,6 +4570,13 @@ function agentTypeGuidance(agentType) {
         "### Agent-Type Guidance (gemini)",
         "- Execute task work in small, verifiable increments and report each milestone to leader-fixed.",
         "- Keep commit-sized changes scoped to assigned files only; no broad refactors.",
+        `- CRITICAL: You MUST run \`${claimTaskCommand}\` before starting work and \`${transitionTaskStatusCommand}\` when done. Do not exit without transitioning the task status.`
+      ].join("\n");
+    case "kimi":
+      return [
+        "### Agent-Type Guidance (kimi)",
+        "- Prefer concise, tool-oriented execution. Use file edits and shell commands directly.",
+        "- Report progress in structured summaries after each significant step.",
         `- CRITICAL: You MUST run \`${claimTaskCommand}\` before starting work and \`${transitionTaskStatusCommand}\` when done. Do not exit without transitioning the task status.`
       ].join("\n");
     case "cursor":
@@ -5431,7 +5456,10 @@ function resolveExternalModel(provider, raw, cfg) {
   if (provider === "codex") {
     return defaults?.codexModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.codexModel;
   }
-  return defaults?.geminiModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+  if (provider === "gemini") {
+    return defaults?.geminiModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.geminiModel;
+  }
+  return defaults?.kimiModel ?? BUILTIN_EXTERNAL_MODEL_DEFAULTS.kimiModel;
 }
 function resolveRoleAssignment(role, cfg) {
   const normalized = normalizeDelegationRole(role);
@@ -6070,6 +6098,9 @@ async function spawnV2Worker(opts) {
     }
     if (opts.agentType === "gemini") {
       return process.env.OMC_EXTERNAL_MODELS_DEFAULT_GEMINI_MODEL || process.env.OMC_GEMINI_DEFAULT_MODEL || void 0;
+    }
+    if (opts.agentType === "kimi") {
+      return process.env.OMC_EXTERNAL_MODELS_DEFAULT_KIMI_MODEL || process.env.OMC_KIMI_DEFAULT_MODEL || void 0;
     }
     return resolveClaudeWorkerModel();
   })();
@@ -7172,7 +7203,7 @@ async function shutdownTeam(teamName, sessionName2, cwd, timeoutMs = 3e4, worker
     teamName
   });
   const configData = await readJsonSafe2(join17(root, "config.json"));
-  const CLI_AGENT_TYPES = /* @__PURE__ */ new Set(["claude", "codex", "gemini"]);
+  const CLI_AGENT_TYPES = /* @__PURE__ */ new Set(["claude", "codex", "gemini", "kimi"]);
   const agentTypes = configData?.agentTypes ?? [];
   const isCliWorkerTeam = agentTypes.length > 0 && agentTypes.every((t) => CLI_AGENT_TYPES.has(t));
   if (!isCliWorkerTeam) {
@@ -7974,7 +8005,7 @@ init_monitor();
 init_platform();
 init_paths();
 var JOB_ID_PATTERN = /^omc-[a-z0-9]{1,16}$/;
-var VALID_CLI_AGENT_TYPES = /* @__PURE__ */ new Set(["claude", "codex", "gemini", "cursor"]);
+var VALID_CLI_AGENT_TYPES = /* @__PURE__ */ new Set(["claude", "codex", "gemini", "cursor", "kimi"]);
 var SUBCOMMANDS = /* @__PURE__ */ new Set(["start", "status", "wait", "cleanup", "resume", "shutdown", "api", "help", "--help", "-h"]);
 var SUPPORTED_API_OPERATIONS = /* @__PURE__ */ new Set([
   "send-message",
@@ -8436,7 +8467,7 @@ async function teamCleanupCommand(jobId, cleanupOptions = {}, options = {}) {
 }
 var TEAM_USAGE = `
 Usage:
-  omc team start --agent <claude|codex|gemini|cursor>[,<agent>...] --task "<task>" [--count N] [--name TEAM] [--cwd DIR] [--new-window] [--json]
+  omc team start --agent <claude|codex|gemini|cursor|kimi>[,<agent>...] --task "<task>" [--count N] [--name TEAM] [--cwd DIR] [--new-window] [--json]
   omc team status <job_id|team_name> [--json] [--cwd DIR]
   omc team wait <job_id> [--timeout-ms MS] [--json]
   omc team cleanup <job_id> [--grace-ms MS] [--json]

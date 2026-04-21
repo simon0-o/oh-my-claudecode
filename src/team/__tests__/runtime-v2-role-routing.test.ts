@@ -61,7 +61,7 @@ describe('runtime-v2 role routing — processCliWorkerVerdicts (AC-7)', () => {
   async function bootstrap(opts: {
     verdict: 'approve' | 'revise' | 'reject';
     paneAlive?: boolean;
-    workerCli?: 'codex' | 'gemini' | 'claude';
+    workerCli?: 'codex' | 'gemini' | 'claude' | 'kimi';
     omitVerdictFile?: boolean;
     invalidVerdictJson?: boolean;
   }): Promise<{ teamRoot: string; outputFile: string; taskPath: string }> {

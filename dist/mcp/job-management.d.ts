@@ -23,7 +23,7 @@ export declare function registerSpawnedPid(pid: number): void;
  * - 1 match: returns { statusPath, slug }
  * - Many matches: prefers non-terminal (active) status, then newest spawnedAt
  */
-export declare function findJobStatusFile(provider: 'codex' | 'gemini', jobId: string, workingDirectory?: string): {
+export declare function findJobStatusFile(provider: 'codex' | 'gemini' | 'kimi', jobId: string, workingDirectory?: string): {
     statusPath: string;
     slug: string;
 } | undefined;
@@ -34,7 +34,7 @@ export declare function findJobStatusFile(provider: 'codex' | 'gemini', jobId: s
  * WARNING: This function blocks the MCP request handler for the duration of the poll.
  * For non-blocking checks, use handleCheckJobStatus instead.
  */
-export declare function handleWaitForJob(provider: 'codex' | 'gemini', jobId: string, timeoutMs?: number): Promise<{
+export declare function handleWaitForJob(provider: 'codex' | 'gemini' | 'kimi', jobId: string, timeoutMs?: number): Promise<{
     content: Array<{
         type: 'text';
         text: string;
@@ -44,7 +44,7 @@ export declare function handleWaitForJob(provider: 'codex' | 'gemini', jobId: st
 /**
  * check_job_status - non-blocking status check
  */
-export declare function handleCheckJobStatus(provider: 'codex' | 'gemini', jobId: string): Promise<{
+export declare function handleCheckJobStatus(provider: 'codex' | 'gemini' | 'kimi', jobId: string): Promise<{
     content: Array<{
         type: 'text';
         text: string;
@@ -54,7 +54,7 @@ export declare function handleCheckJobStatus(provider: 'codex' | 'gemini', jobId
 /**
  * kill_job - send a signal to a running background job
  */
-export declare function handleKillJob(provider: 'codex' | 'gemini', jobId: string, signal?: string): Promise<{
+export declare function handleKillJob(provider: 'codex' | 'gemini' | 'kimi', jobId: string, signal?: string): Promise<{
     content: Array<{
         type: 'text';
         text: string;
@@ -65,14 +65,14 @@ export declare function handleKillJob(provider: 'codex' | 'gemini', jobId: strin
  * list_jobs - list background jobs with status filter and limit.
  * Provider is hardcoded per-server (passed as first arg).
  */
-export declare function handleListJobs(provider: 'codex' | 'gemini', statusFilter?: 'active' | 'completed' | 'failed' | 'all', limit?: number): Promise<{
+export declare function handleListJobs(provider: 'codex' | 'gemini' | 'kimi', statusFilter?: 'active' | 'completed' | 'failed' | 'all', limit?: number): Promise<{
     content: Array<{
         type: 'text';
         text: string;
     }>;
     isError?: boolean;
 }>;
-export declare function getJobManagementToolSchemas(_provider?: 'codex' | 'gemini'): ({
+export declare function getJobManagementToolSchemas(_provider?: 'codex' | 'gemini' | 'kimi'): ({
     name: string;
     description: string;
     inputSchema: {

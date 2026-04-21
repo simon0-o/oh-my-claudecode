@@ -22,7 +22,7 @@ import { sanitizeName, isWorkerAlive, killWorkerPanes, buildWorkerStartCommand, 
 import { TeamPaths, absPath } from './state-paths.js';
 // ── Environment gate ──────────────────────────────────────────────────────────
 const OMC_TEAM_SCALING_ENABLED_ENV = 'OMC_TEAM_SCALING_ENABLED';
-const CLI_AGENT_TYPES = new Set(['claude', 'codex', 'gemini']);
+const CLI_AGENT_TYPES = new Set(['claude', 'codex', 'gemini', 'kimi']);
 export function isScalingEnabled(env = process.env) {
     const raw = env[OMC_TEAM_SCALING_ENABLED_ENV];
     if (!raw)

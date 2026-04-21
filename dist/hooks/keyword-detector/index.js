@@ -28,7 +28,8 @@ const KEYWORD_PATTERNS = {
     'deep-interview': /\b(deep[\s-]interview|ouroboros)\b|(딥인터뷰)/i,
     ccg: /\b(ccg|claude-codex-gemini)\b|(씨씨지)/i,
     codex: /\b(ask|use|delegate\s+to)\s+(codex|gpt)\b/i,
-    gemini: /\b(ask|use|delegate\s+to)\s+gemini\b/i
+    gemini: /\b(ask|use|delegate\s+to)\s+gemini\b/i,
+    kimi: /\b(ask|use|delegate\s+to)\s+kimi\b/i
 };
 /**
  * Priority order for keyword detection
@@ -36,7 +37,7 @@ const KEYWORD_PATTERNS = {
 const KEYWORD_PRIORITY = [
     'cancel', 'ralph', 'autopilot', 'team', 'ultrawork',
     'ccg', 'ralplan', 'tdd', 'code-review', 'security-review',
-    'ultrathink', 'deepsearch', 'analyze', 'deep-interview', 'codex', 'gemini'
+    'ultrathink', 'deepsearch', 'analyze', 'deep-interview', 'codex', 'gemini', 'kimi'
 ];
 /**
  * Canonical workflow skills detected via explicit slash invocation.

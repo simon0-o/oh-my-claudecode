@@ -511,7 +511,7 @@ describe('Builtin Skills', () => {
     it('should document allowed omc-teams agent types and native team fallback', () => {
       const skill = getBuiltinSkill('omc-teams');
       expect(skill).toBeDefined();
-      expect(skill?.template).toContain('/omc-teams` only supports **`claude`**, **`codex`**, and **`gemini`**');
+      expect(skill?.template).toContain('/omc-teams` only supports **`claude`**, **`codex`**, **`gemini`**, and **`kimi`**');
       expect(skill?.template).toContain('unsupported type such as `expert`');
       expect(skill?.template).toContain('/oh-my-claudecode:team');
     });

@@ -276,7 +276,7 @@ export interface HookResult {
 /**
  * External model provider type
  */
-export type ExternalModelProvider = "codex" | "gemini";
+export type ExternalModelProvider = "codex" | "gemini" | "kimi";
 
 /**
  * External model configuration for a specific role or task
@@ -293,6 +293,7 @@ export interface ExternalModelsDefaults {
   provider?: ExternalModelProvider;
   codexModel?: string;
   geminiModel?: string;
+  kimiModel?: string;
 }
 
 /**
@@ -341,7 +342,9 @@ export type DelegationProvider =
   /** Use /team to coordinate Codex CLI workers in tmux panes. */
   | "codex"
   /** Use /team to coordinate Gemini CLI workers in tmux panes. */
-  | "gemini";
+  | "gemini"
+  /** Use /team to coordinate Kimi CLI workers in tmux panes. */
+  | "kimi";
 
 /** Tool type for delegation routing — only Claude Task is supported. */
 export type DelegationTool = "Task";
@@ -414,7 +417,7 @@ export const CANONICAL_TEAM_ROLES = [
 export type CanonicalTeamRole = typeof CANONICAL_TEAM_ROLES[number];
 
 /** Provider for /team role routing. */
-export type TeamRoleProvider = 'claude' | 'codex' | 'gemini';
+export type TeamRoleProvider = 'claude' | 'codex' | 'gemini' | 'kimi';
 
 /** Tier name accepted in role-assignment `model` field. */
 export type TeamRoleTier = 'HIGH' | 'MEDIUM' | 'LOW';

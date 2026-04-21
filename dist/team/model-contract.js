@@ -185,6 +185,22 @@ const CONTRACTS = {
             return rawOutput.trim();
         },
     },
+    kimi: {
+        agentType: 'kimi',
+        binary: 'kimi',
+        installInstructions: 'Install Kimi CLI: pip install kimi-cli (or see https://platform.moonshot.cn/docs)',
+        supportsPromptMode: true,
+        promptModeFlag: '-p',
+        buildLaunchArgs(model, extraFlags = []) {
+            const args = ['--print'];
+            if (model)
+                args.push('--model', model);
+            return [...args, ...extraFlags];
+        },
+        parseOutput(rawOutput) {
+            return rawOutput.trim();
+        },
+    },
 };
 export function getContract(agentType) {
     const contract = CONTRACTS[agentType];
@@ -293,6 +309,8 @@ const WORKER_MODEL_ENV_ALLOWLIST = [
     'OMC_CODEX_DEFAULT_MODEL',
     'OMC_EXTERNAL_MODELS_DEFAULT_GEMINI_MODEL',
     'OMC_GEMINI_DEFAULT_MODEL',
+    'OMC_EXTERNAL_MODELS_DEFAULT_KIMI_MODEL',
+    'OMC_KIMI_DEFAULT_MODEL',
 ];
 export function getWorkerEnv(teamName, workerName, agentType, env = process.env) {
     validateTeamName(teamName);

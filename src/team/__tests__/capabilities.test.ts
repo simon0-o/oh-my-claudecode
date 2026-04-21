@@ -9,7 +9,7 @@ import type { WorkerCapability } from '../types.js';
 
 function makeMember(
   name: string,
-  backend: 'claude-native' | 'mcp-codex' | 'mcp-gemini',
+  backend: 'claude-native' | 'mcp-codex' | 'mcp-gemini' | 'mcp-kimi' | 'tmux-claude' | 'tmux-codex' | 'tmux-gemini' | 'tmux-kimi',
   capabilities: WorkerCapability[],
   status: 'active' | 'idle' | 'dead' = 'active'
 ): UnifiedTeamMember {
@@ -46,6 +46,20 @@ describe('capabilities', () => {
       expect(caps).toContain('ui-design');
       expect(caps).toContain('documentation');
       expect(caps).toContain('research');
+    });
+
+    it('returns capabilities for mcp-kimi', () => {
+      const caps = getDefaultCapabilities('mcp-kimi');
+      expect(caps).toContain('code-edit');
+      expect(caps).toContain('testing');
+      expect(caps).toContain('general');
+    });
+
+    it('returns capabilities for tmux-kimi', () => {
+      const caps = getDefaultCapabilities('tmux-kimi');
+      expect(caps).toContain('code-edit');
+      expect(caps).toContain('testing');
+      expect(caps).toContain('general');
     });
 
     it('returns a copy, not a reference', () => {

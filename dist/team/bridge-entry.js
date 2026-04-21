@@ -116,8 +116,8 @@ function main() {
     config.teamName = sanitizeName(config.teamName);
     config.workerName = sanitizeName(config.workerName);
     // Validate provider
-    if (config.provider !== 'codex' && config.provider !== 'gemini') {
-        console.error(`Invalid provider: ${config.provider}. Must be 'codex' or 'gemini'.`);
+    if (config.provider !== 'codex' && config.provider !== 'gemini' && config.provider !== 'kimi') {
+        console.error(`Invalid provider: ${config.provider}. Must be 'codex', 'gemini', or 'kimi'.`);
         process.exit(1);
     }
     // Validate working directory before use
