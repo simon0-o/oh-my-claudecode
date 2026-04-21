@@ -18,6 +18,7 @@ export { qaTesterAgent, QA_TESTER_PROMPT_METADATA } from './qa-tester.js';
 export { scientistAgent, SCIENTIST_PROMPT_METADATA } from './scientist.js';
 export { tracerAgent, TRACER_PROMPT_METADATA } from './tracer.js';
 export { documentSpecialistAgent, DOCUMENT_SPECIALIST_PROMPT_METADATA } from './document-specialist.js';
+export { kimiExecutorAgent, KIMI_EXECUTOR_PROMPT_METADATA } from './kimi-executor.js';
 export { debuggerAgent, verifierAgent } from './definitions.js';
 export { testEngineerAgent } from './definitions.js';
 export { securityReviewerAgent, codeReviewerAgent, gitMasterAgent, codeSimplifierAgent } from './definitions.js';

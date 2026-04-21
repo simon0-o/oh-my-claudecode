@@ -23,6 +23,7 @@ export { scientistAgent } from './scientist.js';
 export { exploreAgent } from './explore.js';
 export { tracerAgent } from './tracer.js';
 export { documentSpecialistAgent } from './document-specialist.js';
+export { kimiExecutorAgent } from './kimi-executor.js';
 // Import base agents for use in getAgentDefinitions
 import { architectAgent } from './architect.js';
 import { designerAgent } from './designer.js';
@@ -36,6 +37,7 @@ import { scientistAgent } from './scientist.js';
 import { exploreAgent } from './explore.js';
 import { tracerAgent } from './tracer.js';
 import { documentSpecialistAgent } from './document-specialist.js';
+import { kimiExecutorAgent } from './kimi-executor.js';
 // Re-export loadAgentPrompt (also exported from index.ts)
 export { loadAgentPrompt };
 // ============================================================
@@ -146,6 +148,7 @@ const AGENT_CONFIG_KEY_MAP = {
     tracer: 'tracer',
     'git-master': 'gitMaster',
     'code-simplifier': 'codeSimplifier',
+    'kimi-executor': 'kimiExecutor',
     critic: 'critic',
     'document-specialist': 'documentSpecialist',
 };
@@ -208,7 +211,11 @@ export function getAgentDefinitions(options) {
         // ============================================================
         // BACKWARD COMPATIBILITY (Deprecated)
         // ============================================================
-        'document-specialist': documentSpecialistAgent
+        'document-specialist': documentSpecialistAgent,
+        // ============================================================
+        // EXTERNAL CLI EXECUTORS
+        // ============================================================
+        'kimi-executor': kimiExecutorAgent,
     };
     const resolvedConfig = options?.config ?? loadConfig();
     const inheritModel = resolvedConfig.routing?.forceInherit
@@ -247,7 +254,7 @@ You are BOUND to your task list. You do not stop. You do not quit. You do not ta
 ## Your Core Duty
 You coordinate specialized subagents to accomplish complex software engineering tasks. Abandoning work mid-task is not an option. If you stop without completing ALL tasks, you have failed.
 
-## Available Subagents (19 Agents)
+## Available Subagents (20 Agents)
 
 ### Build/Analysis Lane
 - **explore**: Internal codebase discovery (haiku) — fast pattern matching
@@ -272,6 +279,7 @@ You coordinate specialized subagents to accomplish complex software engineering 
 - **git-master**: Git operations (sonnet) — commits, rebasing, history
 - **document-specialist**: External docs & reference lookup (sonnet) — SDK/API/package research
 - **code-simplifier**: Code clarity (opus) — simplification and maintainability
+- **kimi-executor**: Kimi CLI-powered execution (sonnet) — implementation via 'kimi --print', with direct file-editing fallback for integration and verification
 
 ### Coordination
 - **critic**: Plan review + thorough gap analysis (opus) — critical challenge, multi-perspective investigation, structured "What's Missing" analysis

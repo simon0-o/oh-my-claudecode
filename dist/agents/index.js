@@ -21,6 +21,7 @@ export { qaTesterAgent, QA_TESTER_PROMPT_METADATA } from './qa-tester.js';
 export { scientistAgent, SCIENTIST_PROMPT_METADATA } from './scientist.js';
 export { tracerAgent, TRACER_PROMPT_METADATA } from './tracer.js';
 export { documentSpecialistAgent, DOCUMENT_SPECIALIST_PROMPT_METADATA } from './document-specialist.js';
+export { kimiExecutorAgent, KIMI_EXECUTOR_PROMPT_METADATA } from './kimi-executor.js';
 // Reformed agents (Build/Analysis Lane)
 export { debuggerAgent, verifierAgent } from './definitions.js';
 // Reformed agents (Domain Specialists)

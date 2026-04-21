@@ -75,6 +75,9 @@ export interface PluginConfig {
         documentSpecialist?: {
             model?: string;
         };
+        kimiExecutor?: {
+            model?: string;
+        };
     };
     features?: {
         parallelExecution?: boolean;

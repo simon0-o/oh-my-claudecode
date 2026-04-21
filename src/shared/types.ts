@@ -39,6 +39,7 @@ export interface PluginConfig {
     codeSimplifier?: { model?: string };
     critic?: { model?: string };
     documentSpecialist?: { model?: string };
+    kimiExecutor?: { model?: string };
   };
 
   // Feature toggles

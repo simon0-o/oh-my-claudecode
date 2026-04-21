@@ -4052,6 +4052,44 @@ var init_document_specialist = __esm({
   }
 });
 
+// src/agents/kimi-executor.ts
+var KIMI_EXECUTOR_PROMPT_METADATA, kimiExecutorAgent;
+var init_kimi_executor = __esm({
+  "src/agents/kimi-executor.ts"() {
+    "use strict";
+    init_utils();
+    KIMI_EXECUTOR_PROMPT_METADATA = {
+      category: "specialist",
+      cost: "CHEAP",
+      promptAlias: "KimiExec",
+      triggers: [
+        { domain: "Implementation tasks", trigger: "Code changes, feature implementation, refactoring" },
+        { domain: "Bug fixes", trigger: "Clear, scoped fixes where Kimi analysis helps" },
+        { domain: "Complex analysis", trigger: "Multi-file reasoning, pattern detection" }
+      ],
+      useWhen: [
+        "Tasks where Kimi CLI may provide better results for specific languages or frameworks",
+        "Implementation work that benefits from an external reasoning pass before editing",
+        "Debugging or analysis where a second model perspective is valuable",
+        "Direct, focused implementation tasks with fallback to local file editing"
+      ],
+      avoidWhen: [
+        "Simple file edits faster done directly (use executor)",
+        "Tasks requiring only internal codebase search (use explore)",
+        "Tasks requiring deep architectural decisions (consult architect first)"
+      ]
+    };
+    kimiExecutorAgent = {
+      name: "kimi-executor",
+      description: "Task executor powered by Kimi CLI. Uses `kimi --print` for complex analysis and implementation, with direct file-editing fallback. For tasks where Kimi's reasoning complements or outperforms direct editing.",
+      prompt: loadAgentPrompt("kimi-executor"),
+      model: "sonnet",
+      defaultModel: "sonnet",
+      metadata: KIMI_EXECUTOR_PROMPT_METADATA
+    };
+  }
+});
+
 // src/agents/definitions.ts
 var debuggerAgent, verifierAgent, testEngineerAgent, securityReviewerAgent, codeReviewerAgent, gitMasterAgent, codeSimplifierAgent;
 var init_definitions = __esm({
@@ -4072,6 +4110,7 @@ var init_definitions = __esm({
     init_explore();
     init_tracer();
     init_document_specialist();
+    init_kimi_executor();
     init_architect();
     init_designer();
     init_writer();
@@ -4084,6 +4123,7 @@ var init_definitions = __esm({
     init_explore();
     init_tracer();
     init_document_specialist();
+    init_kimi_executor();
     debuggerAgent = {
       name: "debugger",
       description: "Root-cause analysis, regression isolation, failure diagnosis (Sonnet).",
